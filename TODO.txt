@@ -1,9 +1,8 @@
-=====
 Todos
-=====
+------
 
 for Windows
------------
+~~~~~~~~~~~
 * use innosetup package
 * replace os.system with subprocess
 
@@ -13,9 +12,8 @@ for Unix
 * NotImplemented
 
 
-============
 Known Issues
-============
+~~~~~~~~~~~~~
 
 * Process restart probrem when zc.buildout upgrate it by oneself.
 
