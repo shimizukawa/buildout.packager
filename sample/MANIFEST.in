@@ -1,0 +1,2 @@
+exclude src/bin src/develop-eggs src/parts
+recursive-include src *
