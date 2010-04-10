@@ -17,9 +17,9 @@ classifiers = [
 ]
 
 setup(
-    name='buildout_installer',
+    name='buildout.packager',
     version=version,
-    description='installer builder for buildout',
+    description='buildout.packager generate installer from setup.py and buildout.cfg files.',
     #long_description=long_description,
     classifiers=classifiers,
     keywords=['zc.buildout','installer'],
@@ -38,8 +38,8 @@ setup(
     ],
     entry_points="""
        [distutils.commands]
-       bdist_buildout = buildout_installer.command.bdist_buildout:bdist_buildout
-       bdist_buildout_prepare = buildout_installer.command.bdist_buildout_prepare:bdist_buildout_prepare
+       bdist_buildout = buildout.packager.command.bdist_buildout:bdist_buildout
+       bdist_buildout_prepare = buildout.packager.command.bdist_buildout_prepare:bdist_buildout_prepare
     """,
 )
 
