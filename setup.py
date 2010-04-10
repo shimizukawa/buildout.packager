@@ -4,7 +4,10 @@ from setuptools import setup
 import os
 
 version = '0.0.1'
-#long_description = open("README.txt").read()
+long_description = \
+  open(os.path.join("src","buildout","packager","README.txt")).read() + \
+  open(os.path.join("TODO.txt")).read()
+
 classifiers = [
    "Development Status :: 4 - Beta",
 #   "Environment :: Win32 (MS Windows)",
@@ -20,18 +23,14 @@ setup(
     name='buildout.packager',
     version=version,
     description='buildout.packager generate installer from setup.py and buildout.cfg files.',
-    #long_description=long_description,
+    long_description=long_description,
     classifiers=classifiers,
     keywords=['zc.buildout','installer'],
     author='Takayuki SHIMIZUKAWA',
     author_email='shimizukawa at gmail.com',
     url='http://svn.freia.jp/open/buildout.packager/',
     license='PSL',
-    #packages='.',
     package_dir={'': 'src'},
-    #package_data={'': ['cache']},
-    #namespace_packages=[${repr($namespace_package)}],
-    #include_package_data=True,
     install_requires=[
        'setuptools',
         # -*- Extra requirements: -*-
