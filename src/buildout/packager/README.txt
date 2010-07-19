@@ -65,7 +65,7 @@ buildout.cfg::
 
 
 Do the command `python setup.py bdist_buildout`.
-Then you get the installation file named `dist\Sphinx-1.0-py2.6-win32.exe`.
+Then you get the installation file named `dist/Sphinx-1.0-py2.6-win32.exe`.
 
 
 History
