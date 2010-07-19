@@ -28,7 +28,7 @@ setup(
     keywords=['zc.buildout','installer'],
     author='Takayuki SHIMIZUKAWA',
     author_email='shimizukawa at gmail.com',
-    url='http://svn.freia.jp/open/buildout.packager/',
+    url='http://bitbucket.org/shimizukawa/buildout.packager/',
     license='PSL',
     package_dir={'': 'src'},
     install_requires=[
