@@ -106,8 +106,11 @@ class InnoScript(object):
         ofi.close()
 
     def compile(self):
-        #FIXME! ISCC.exe のインストール先を設定出来るようにする
-        compiler = r'"C:\Program Files (x86)\Inno Setup 5\ISCC.exe"'
+        try
+            import win32_iscc
+            compiler = win32_iscc.main()
+        except:
+            compiler = 'ISCC.exe'
         os.system("%s %s" % (compiler, self.iss_path))
         #TODO! 実行状況をpipeで取得して行数等で'.'を出力する。同時に.logに保存
 
