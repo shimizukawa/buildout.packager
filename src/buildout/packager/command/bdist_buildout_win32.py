@@ -106,12 +106,12 @@ class InnoScript(object):
         ofi.close()
 
     def compile(self):
-        try
+        try:
             import win32_iscc
             compiler = win32_iscc.main()
         except:
             compiler = 'ISCC.exe'
-        os.system("%s %s" % (compiler, self.iss_path))
+        os.system('"%s" %s' % (compiler, self.iss_path))
         #TODO! 実行状況をpipeで取得して行数等で'.'を出力する。同時に.logに保存
 
     def cleanup(self):
