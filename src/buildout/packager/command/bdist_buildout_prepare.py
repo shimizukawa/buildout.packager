@@ -45,6 +45,8 @@ class bdist_buildout_prepare(Command):
             src = os.path.join(pkg_base_dir, name)
             if os.path.isfile(src):
                 shutil.copy(src, os.path.join(pkg_dir, name))
+            if os.path.split(src)[1] == 'buildout_pre.cfg':
+                shutil.copy(src, os.path.join(build_dir, name)) #FIXME: check overwriting
         shutil.copy(os.path.join(cwd, 'buildout.cfg'), build_dir) #FIXME: buildout.cfg exist?
 
         if not os.path.exists(os.path.join(cache_dir,'download-cache')):
@@ -55,9 +57,14 @@ class bdist_buildout_prepare(Command):
         os.chdir(build_dir)
         #FIXME! don't use os.system!
         os.system(sys.executable + ' ' + os.path.join(pkg_dir,'bootstrap2.py') + ' init')
-        os.system(os.path.join('bin','buildout -Uv -c ' + os.path.join(pkg_dir,'buildout_pre.cfg')))
-        shutil.rmtree('bin')
-        shutil.rmtree('develop-eggs')
-        shutil.rmtree('parts')
+        os.system(os.path.join('bin','buildout -UNc buildout_pre.cfg'))
         os.chdir(cwd)
+
+        # reomve non-packaging files/dirs
+        for name in ['bin','develop-eggs','parts','buildout_pre.cfg','.installed.cfg']:
+            path = os.path.join(build_dir, name)
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
 
