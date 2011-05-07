@@ -126,11 +126,8 @@ class InnoScript(object):
             count = -1
             last_lines = []
 
-            while True:
+            for line in iter(proc.stdout.readline, ''):
                 #TODO! .logにlineを保存
-                line = proc.stdout.readline()
-                if not line:
-                    break
                 if count >= 0 or line.startswith('Creating setup files'):
                     count += 1
                 if 0 < count <= total_count:
