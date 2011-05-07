@@ -7,6 +7,8 @@ class bdist_buildout_prepare(Command):
     description = "create a buildout installer"
 
     user_options = [
+        ('build-base=', 'b',
+         "base directory for build library"),
         ('src-dir=', 's',
          "directory to get buildout files in"
          "[default: src]"),
@@ -17,20 +19,20 @@ class bdist_buildout_prepare(Command):
 
     def initialize_options (self):
         self.src_dir = None
-        self.build_dir = None
+        self.build_base = None
         self.dist_dir = None
 
     def finalize_options (self):
         if self.src_dir is None:
             self.src_dir = "src"
-        if self.build_dir is None:
-            self.build_dir = "build"
+        if self.build_base is None:
+            self.build_base = "build"
         if self.dist_dir is None:
             self.dist_dir = "dist"
 
     def run(self):
         cwd = os.getcwd() #FIXME: setup.py実行ディレクトリの取得をしたい
-        build_dir = os.path.join(cwd, self.build_dir)
+        build_dir = os.path.join(cwd, self.build_base, 'buildout')
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = os.path.join(build_dir,'cache')
