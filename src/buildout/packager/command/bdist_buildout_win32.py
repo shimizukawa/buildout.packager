@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import os, sys
+import os
+import sys
+import subprocess
 
 class InnoScript(object):
     def __init__(self,
@@ -111,8 +113,38 @@ class InnoScript(object):
             compiler = win32_iscc.main()
         except:
             compiler = 'ISCC.exe'
-        os.system('"%s" %s' % (compiler, self.iss_path))
-        #TODO! 実行状況をpipeで取得して行数等で'.'を出力する。同時に.logに保存
+
+        proc = subprocess.Popen(
+                [compiler, self.iss_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=sys.stderr
+            )
+
+        if 1:  # displaying progress count-up
+            total_count = len(self.data_files) + len(self.sys_files)
+            count = -1
+            last_lines = []
+
+            while True:
+                #TODO! .logにlineを保存
+                line = proc.stdout.readline()
+                if not line:
+                    break
+                if count >= 0 or line.startswith('Creating setup files'):
+                    count += 1
+                if 0 < count <= total_count:
+                    sys.stdout.write(
+                        "\r  Files %d / %d [%d%%]" %
+                        (count, total_count, 100.0 * count / total_count)
+                    )
+                elif count > total_count:
+                    last_lines.append(line)
+            sys.stdout.write('\n')
+            sys.stdout.write(''.join(last_lines[-2:]))
+
+        proc.wait()
+
 
     def cleanup(self):
         if os.path.exists(self.iss_path):
@@ -157,9 +189,9 @@ def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                         version,
                         author_name,
                         author_url)
-    print "*** creating the inno setup script ***"
+    print "Creating the inno setup script."
     script.create()
-    print "*** compiling the inno setup script ***"
+    print "Compiling the inno setup script."
     script.compile()
     script.cleanup()
 
