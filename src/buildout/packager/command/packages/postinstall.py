@@ -5,11 +5,12 @@ import os, sys, shutil
 def main(app_dir):
     cwd = os.getcwd()
     pkg_dir = os.path.join(app_dir, 'packages')
+    bootstrap = '"%s"' % os.path.join(pkg_dir,'bootstrap2.py')
 
     os.chdir(app_dir)
     #FIXME! don't use os.system!
-    os.system(sys.executable + ' ' + os.path.join(pkg_dir,'bootstrap2.py') + ' init')
-    os.system(os.path.join('bin','buildout -v -c ' + os.path.join(pkg_dir,'buildout_post.cfg')))
+    os.system(sys.executable + ' ' + bootstrap + ' init')
+    os.system(os.path.join('bin','buildout') + ' -UNc buildout_post.cfg')
     os.chdir(cwd)
 
 

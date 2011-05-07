@@ -45,7 +45,7 @@ class bdist_buildout_prepare(Command):
             src = os.path.join(pkg_base_dir, name)
             if os.path.isfile(src):
                 shutil.copy(src, os.path.join(pkg_dir, name))
-            if os.path.split(src)[1] == 'buildout_pre.cfg':
+            if os.path.split(src)[1] in ('buildout_pre.cfg', 'buildout_post.cfg'):
                 shutil.copy(src, os.path.join(build_dir, name)) #FIXME: check overwriting
         shutil.copy(os.path.join(cwd, 'buildout.cfg'), build_dir) #FIXME: buildout.cfg exist?
 
