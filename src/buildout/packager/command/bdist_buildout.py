@@ -36,7 +36,12 @@ class bdist_buildout(Command):
             self.dist_dir = "dist"
 
     def run (self):
-        self.run_command('bdist_buildout_prepare') #TODO: skip if prepared
+        cmd_name = 'bdist_buildout_prepare'
+        sub_cmd = self.reinitialize_command(cmd_name)
+        for option in ('src_dir', 'build_base', 'dist_dir'):
+            setattr(sub_cmd, option, getattr(self, option))
+        self.run_command(cmd_name) #TODO: skip if prepared
+
         build_dir = os.path.join(self.build_base, 'buildout')
         meta = self.distribution.metadata
 
