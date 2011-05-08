@@ -150,6 +150,10 @@ class InnoScript(object):
             if self.verbose == 1:
                 map(log.info, last_lines[-2:])
 
+        else:
+            for line in proc.stdout:
+                pass
+
         proc.wait()
 
 
