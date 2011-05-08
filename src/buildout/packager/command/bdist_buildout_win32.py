@@ -3,6 +3,8 @@ import os
 import sys
 import subprocess
 from distutils.util import get_platform
+from distutils import log
+
 
 class InnoScript(object):
     def __init__(self,
@@ -16,7 +18,9 @@ class InnoScript(object):
                  exe_files = [],
                  version = "0.0.1",
                  author_name = None,
-                 author_url = None):
+                 author_url = None,
+                 verbose = 1):
+        self.verbose = verbose
         installer_name = to_filename(installer_name, version)
         self.iss_path = os.path.join(src_dir, "%s.iss" % installer_name)
         self.src_dir = src_dir
@@ -122,24 +126,29 @@ class InnoScript(object):
                 stderr=sys.stderr
             )
 
-        if 1:  # displaying progress count-up
+        if self.verbose:  # displaying progress count-up
             total_count = len(self.data_files) + len(self.sys_files)
             count = -1
             last_lines = []
 
             for line in iter(proc.stdout.readline, ''):
-                #TODO! .logにlineを保存
+                log.debug(line.rstrip())
                 if count >= 0 or line.startswith('Creating setup files'):
                     count += 1
                 if 0 < count <= total_count:
+                    if self.verbose == 1:
+                        sys.stdout.write('\r')
                     sys.stdout.write(
-                        "\r  Files %d / %d [%d%%]" %
+                        "  Files %d / %d [%d%%]" %
                         (count, total_count, 100.0 * count / total_count)
                     )
+                    if self.verbose > 1:
+                        sys.stdout.write('\n')
                 elif count > total_count:
-                    last_lines.append(line)
+                    last_lines.append(line.rstrip())
             sys.stdout.write('\n')
-            sys.stdout.write(''.join(last_lines[-2:]))
+            if self.verbose == 1:
+                map(log.info, last_lines[-2:])
 
         proc.wait()
 
@@ -162,7 +171,8 @@ def to_filename(project_name, project_version):
 ################################################################
 
 def make_package(name, installer_name, install_dir, src_dir, dist_dir,
-                 version='0.0.1', author_name=None, author_url=None):
+                 version='0.0.1', author_name=None, author_url=None,
+                 verbose=1):
     data_files = []
     sys_files = []
     exe_files = []
@@ -184,10 +194,11 @@ def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                         exe_files,
                         version,
                         author_name,
-                        author_url)
-    print "Creating the inno setup script."
+                        author_url,
+                        verbose)
+    log.info("Creating the inno setup script.")
     script.create()
-    print "Compiling the inno setup script."
+    log.info("Compiling the inno setup script.")
     script.compile()
     script.cleanup()
 

@@ -47,5 +47,6 @@ class bdist_buildout(Command):
                                  self.dist_dir,
                                  meta.version,
                                  meta.author,
-                                 meta.url)
+                                 meta.url,
+                                 self.verbose)
 
