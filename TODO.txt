@@ -4,7 +4,6 @@ Todos
 for Windows
 ~~~~~~~~~~~
 * use innosetup package
-* replace os.system with subprocess
 
 
 for Unix
