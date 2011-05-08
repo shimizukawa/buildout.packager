@@ -20,12 +20,15 @@ class bdist_buildout(Command):
         ('dist-dir=', 'd',
          "directory to put the source distribution archive(s) in "
          "[default: dist]"),
+        ('python', 'p',
+         "include the Python interpreter. default is not include."),
         ]
 
     def initialize_options (self):
         self.src_dir = None
         self.build_base = None
         self.dist_dir = None
+        self.python = False
 
     def finalize_options (self):
         if self.src_dir is None:
@@ -38,7 +41,7 @@ class bdist_buildout(Command):
     def run (self):
         cmd_name = 'bdist_buildout_prepare'
         sub_cmd = self.reinitialize_command(cmd_name)
-        for option in ('src_dir', 'build_base', 'dist_dir'):
+        for option in ('src_dir', 'build_base', 'dist_dir', 'python'):
             setattr(sub_cmd, option, getattr(self, option))
         self.run_command(cmd_name) #TODO: skip if prepared
 
