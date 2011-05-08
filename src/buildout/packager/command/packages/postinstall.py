@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-from distutils.core import Command
-import os, sys, shutil
+import os
+import sys
+import subprocess
+
 
 def main(app_dir):
     cwd = os.getcwd()
     pkg_dir = os.path.join(app_dir, 'packages')
-    bootstrap = '"%s"' % os.path.join(pkg_dir,'bootstrap2.py')
+    bootstrap = os.path.join(pkg_dir, 'bootstrap2.py')
+    buildout = os.path.join('bin', 'buildout')
 
     os.chdir(app_dir)
-    #FIXME! don't use os.system!
-    os.system(sys.executable + ' ' + bootstrap + ' init')
-    os.system(os.path.join('bin','buildout') + ' -UNc buildout_post.cfg')
+    subprocess.check_call([sys.executable, bootstrap, 'init'])
+    subprocess.check_call([buildout, '-UNovc', 'buildout_post.cfg'])
     os.chdir(cwd)
 
 
@@ -18,10 +20,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         path = sys.argv[1]
     else:
-        path = os.path.dirname(os.path.dirname(sys.argv[0]))
+        path = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0])))
 
     if not os.path.exists(path):
-        print >>sys.stderr, '"%s" is not directory' % sys.argv[1]
+        print >>sys.stderr, '"%s" is not directory' % path
         sys.exit(-2)
     main(path)
 
