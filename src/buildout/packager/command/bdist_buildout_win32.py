@@ -4,6 +4,7 @@ import sys
 import subprocess
 from distutils.util import get_platform
 from distutils import log
+from utils import get_postfix_name
 
 
 inno_setup_code_section = """
@@ -48,10 +49,10 @@ class InnoScript(object):
                  version = "0.0.1",
                  author_name = None,
                  author_url = None,
-                 python_version = sys.version_info,
+                 postfix_name = None,
                  verbose = 1):
         self.verbose = verbose
-        installer_name = to_filename(installer_name, version, python_version)
+        installer_name = to_filename(installer_name, version, postfix_name)
         self.iss_path = os.path.join(src_dir, "%s.iss" % installer_name)
         self.src_dir = src_dir
         if not self.src_dir[-1] in "\\/":
@@ -189,19 +190,17 @@ def norm(name):
     return name.replace('-','_')
 
 
-def to_filename(project_name, project_version, python_version):
-    filename = "%s-%s-py%d.%d" % (
-        norm(project_name), norm(project_version),
-        python_version[0], python_version[1]
-    )
-
-    return filename + '-' + get_platform()
+def to_filename(project_name, project_version, postfix_name=None):
+    filename = "%s-%s" % (norm(project_name), norm(project_version))
+    if postfix_name:
+        filename += '-' + postfix_name
+    return filename
 
 ################################################################
 
 def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                  version='0.0.1', author_name=None, author_url=None,
-                 python_version=sys.version_info, verbose=1):
+                 postfix_name=None, verbose=1):
     data_files = []
     sys_files = []
     exe_files = []
@@ -224,7 +223,7 @@ def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                         version,
                         author_name,
                         author_url,
-                        python_version,
+                        postfix_name,
                         verbose)
     log.info("Creating the inno setup script.")
     script.create()
