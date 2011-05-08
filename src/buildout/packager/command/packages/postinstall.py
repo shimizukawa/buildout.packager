@@ -11,7 +11,7 @@ def main(app_dir):
     buildout = os.path.join('bin', 'buildout')
 
     os.chdir(app_dir)
-    subprocess.check_call([sys.executable, bootstrap, 'init'])
+    subprocess.check_call([sys.executable, bootstrap, '-d', 'init'])
     subprocess.check_call([buildout, '-UNovc', 'buildout_post.cfg'])
     os.chdir(cwd)
 

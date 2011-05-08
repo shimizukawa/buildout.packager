@@ -26,6 +26,40 @@ def popen(cmd):
     return proc.returncode
 
 
+def copy_python(src_python_dir, build_python_dir):
+    if os.path.exists(build_python_dir):
+        return
+
+    log.info("Copying python files.")
+
+    for name in ('libs', 'DLLs', 'include'):
+        shutil.copytree(
+                os.path.join(src_python_dir, name),
+                os.path.join(build_python_dir, name))
+
+    # copy Lib exclude site-packages
+    shutil.copytree(
+            os.path.join(src_python_dir, 'Lib'),
+            os.path.join(build_python_dir, 'Lib'),
+            ignore=shutil.ignore_patterns('site-packages'))
+            #FIXME: ignore kw accept after python-2.6
+
+    # make site-packages and copy README.txt
+    site_packages = os.path.join(build_python_dir, 'Lib', 'site-packages')
+    os.mkdir(site_packages)
+    placeholder = os.path.join(src_python_dir, 'Lib', 'site-packages', 'README.txt')
+    if os.path.exists(placeholder):
+        shutil.copy2(placeholder, site_packages)
+    else:
+        open(os.path.join(site_packages, 'README.txt'), 'w').close()
+
+    # copy files at python root
+    for filename in os.listdir(src_python_dir):
+        path = os.path.join(src_python_dir, filename)
+        if os.path.isfile(path):
+            shutil.copy2(path, build_python_dir)
+
+
 class bdist_buildout_prepare(Command):
     description = "create a buildout installer"
 
@@ -59,6 +93,8 @@ class bdist_buildout_prepare(Command):
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = os.path.join(build_dir,'cache')
+        build_python_dir = os.path.join(build_dir, 'python')
+        executable = os.path.join(build_python_dir, 'python.exe')
 
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
@@ -81,14 +117,19 @@ class bdist_buildout_prepare(Command):
 
         os.chdir(build_dir)
 
-        cmd = [sys.executable, os.path.join(pkg_dir,'bootstrap2.py'), 'init']
-        popen(cmd)
+        # copy python files
+        # TODO: use option's specified python instead of sys.prefix
+        copy_python(sys.prefix, build_python_dir)
 
+        # bootstrap and build
+        cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']
+        popen(cmd)
         cmd = [os.path.join('bin','buildout'), '-UNc', 'buildout_pre.cfg']
         if self.verbose:
             cmd.append('-%s' % ('v' * self.verbose))
         popen(cmd)
 
+        # finally
         os.chdir(cwd)
 
         # reomve non-packaging files/dirs

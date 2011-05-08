@@ -6,6 +6,35 @@ from distutils.util import get_platform
 from distutils import log
 
 
+inno_setup_code_section = """
+[Code]
+var
+  FinishedInstall: Boolean;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+  Python: String;
+  PyScript: String;
+begin
+  if CurStep = ssPostInstall then begin
+    Python := ExpandConstant('{app}\python\python.exe');
+    PyScript := ExpandConstant('{app}\packages\postinstall.py');
+
+    if FileExists(Python) then begin
+      if Exec(Python , PyScript, ExpandConstant('{pf}\'), SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+        FinishedInstall := True;
+    end else
+      if ShellExec('', 'python', PyScript, ExpandConstant('{pf}\'), SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+        FinishedInstall := True;
+
+    if not FinishedInstall then
+      MsgBox('PostInstall:' #13#13 'Execution of python.exe failed. ' + SysErrorMessage(ResultCode) + '.', mbError, MB_OK)
+  end;
+end;
+"""
+
+
 class InnoScript(object):
     def __init__(self,
                  name,
@@ -97,19 +126,12 @@ class InnoScript(object):
         print >> ofi, r'Type: filesandordirs; Name: "{app}\parts";'
         print >> ofi, r'Type: filesandordirs; Name: "{app}\bin";'
         print >> ofi, r'Type: filesandordirs; Name: "{app}\develop-eggs";'
+        print >> ofi, r'Type: filesandordirs; Name: "{app}\.installed.cfg";'
         print >> ofi
 
-        program = r'"python"'
-        param = r'"""{app}\packages\postinstall.py"""'
-        print >> ofi, r"[Run]"
-        print >> ofi, r'Filename: %s; Parameters: %s;' % (program, param)
+        print >> ofi, inno_setup_code_section
         print >> ofi
 
-        #program = r'"{app}\python.exe"'
-        #param = r'"""{app}\packages\preuninstall.py"""'
-        #print >> ofi, r"[UninstallRun]"
-        #print >> ofi, r'Filename: %s; Parameters: %s;' % (program, param)
-        #print >> ofi
         ofi.close()
 
     def compile(self):
