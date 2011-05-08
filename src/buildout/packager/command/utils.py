@@ -4,7 +4,7 @@ import sys
 import subprocess
 from distutils import log
 
-__all__ = ['popen', 'resolve_interpreter', 'get_python_version']
+__all__ = ['popen', 'resolve_interpreter', 'get_postfix_name', 'get_python_version']
 
 
 def popen(cmd):
@@ -44,6 +44,16 @@ def resolve_interpreter(exe):
         log.fatal('The executable %s (from -p %s) does not exist' % (exe, exe))
         sys.exit(3)
     return exe
+
+
+def get_postfix_name(python):
+    name = "py%d.%d" % get_python_version(python)[:2]
+
+    proc = subprocess.Popen(
+            [python, '-c', 'from distutils.util import get_platform; print get_platform()'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+    return name + '-' + out.strip()
 
 
 def get_python_version(python):

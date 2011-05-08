@@ -4,7 +4,7 @@ import sys
 import shutil
 from distutils.core import Command
 from distutils import log
-from utils import popen, resolve_interpreter
+from utils import popen, resolve_interpreter, get_postfix_name
 
 
 def copy_python(src_python_dir, build_python_dir):
@@ -81,7 +81,7 @@ class bdist_buildout_prepare(Command):
 
     def run(self):
         cwd = os.getcwd() #FIXME: setup.py実行ディレクトリの取得をしたい
-        build_dir = os.path.join(cwd, self.build_base, 'buildout')
+        build_dir = os.path.join(cwd, self.build_base, 'buildout-' + get_postfix_name(self.python))
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = os.path.join(build_dir,'cache')

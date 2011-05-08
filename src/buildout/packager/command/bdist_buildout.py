@@ -2,7 +2,7 @@
 from distutils.core import Command
 import os
 import sys
-from utils import resolve_interpreter, get_python_version
+from utils import resolve_interpreter, get_python_version, get_postfix_name
 
 if sys.platform == 'win32':
     import bdist_buildout_win32 as builder
@@ -55,7 +55,7 @@ class bdist_buildout(Command):
             setattr(sub_cmd, option, getattr(self, option))
         self.run_command(cmd_name) #TODO: skip if prepared
 
-        build_dir = os.path.join(self.build_base, 'buildout')
+        build_dir = os.path.join(self.build_base, 'buildout-' + get_postfix_name(self.python))
         meta = self.distribution.metadata
 
         python_version = get_python_version(self.python)
