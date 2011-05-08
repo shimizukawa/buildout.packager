@@ -2,28 +2,9 @@
 import os
 import sys
 import shutil
-import subprocess
 from distutils.core import Command
 from distutils import log
-
-
-def popen(cmd):
-    proc = subprocess.Popen(
-            cmd,
-            stdin  = subprocess.PIPE,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE
-        )
-
-    for line in iter(proc.stdout.readline, ''):
-        log.debug(line.rstrip())
-
-    # FIXME: currently, error output write after stdout
-    for line in iter(proc.stderr.readline, ''):
-        log.error(line.rstrip())
-
-    proc.wait()
-    return proc.returncode
+from utils import popen, resolve_interpreter
 
 
 def copy_python(src_python_dir, build_python_dir):
@@ -72,15 +53,18 @@ class bdist_buildout_prepare(Command):
         ('dist-dir=', 'd',
          "directory to put the source distribution archive(s) in "
          "[default: dist]"),
-        ('python', 'p',
-         "include the Python interpreter. default is not include."),
+        ('include-python', 'i',
+         "include the Python interpreter. [default: False]"),
+        ('python=', 'p',
+         "include the specified Python interpreter. [default: %s]" % sys.executable),
         ]
 
     def initialize_options (self):
         self.src_dir = None
         self.build_base = None
         self.dist_dir = None
-        self.python = False
+        self.include_python = False
+        self.python = None
 
     def finalize_options (self):
         if self.src_dir is None:
@@ -89,6 +73,11 @@ class bdist_buildout_prepare(Command):
             self.build_base = "build"
         if self.dist_dir is None:
             self.dist_dir = "dist"
+        if self.python:
+            self.include_python = True
+            self.python = resolve_interpreter(self.python)
+        else:
+            self.python = sys.executable
 
     def run(self):
         cwd = os.getcwd() #FIXME: setup.py実行ディレクトリの取得をしたい
@@ -96,8 +85,13 @@ class bdist_buildout_prepare(Command):
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = os.path.join(build_dir,'cache')
-        build_python_dir = os.path.join(build_dir, 'python')
-        executable = os.path.join(build_python_dir, 'python.exe')
+
+        if self.include_python:
+            build_python_dir = os.path.join(build_dir, 'python')
+            executable = os.path.join(build_python_dir, 'python.exe')
+        else:
+            build_python_dir = None
+            executable = sys.executable
 
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
@@ -121,8 +115,8 @@ class bdist_buildout_prepare(Command):
         os.chdir(build_dir)
 
         # copy python files
-        # TODO: use option's specified python instead of sys.prefix
-        copy_python(sys.prefix, build_python_dir)
+        if build_python_dir:
+            copy_python(os.path.dirname(self.python), build_python_dir)
 
         # bootstrap and build
         cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']

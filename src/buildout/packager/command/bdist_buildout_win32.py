@@ -48,9 +48,10 @@ class InnoScript(object):
                  version = "0.0.1",
                  author_name = None,
                  author_url = None,
+                 python_version = sys.version_info,
                  verbose = 1):
         self.verbose = verbose
-        installer_name = to_filename(installer_name, version)
+        installer_name = to_filename(installer_name, version, python_version)
         self.iss_path = os.path.join(src_dir, "%s.iss" % installer_name)
         self.src_dir = src_dir
         if not self.src_dir[-1] in "\\/":
@@ -183,13 +184,15 @@ class InnoScript(object):
         if os.path.exists(self.iss_path):
             os.unlink(self.iss_path)
 
+
 def norm(name):
     return name.replace('-','_')
 
-def to_filename(project_name, project_version):
+
+def to_filename(project_name, project_version, python_version):
     filename = "%s-%s-py%d.%d" % (
         norm(project_name), norm(project_version),
-        sys.version_info[0], sys.version_info[1]
+        python_version[0], python_version[1]
     )
 
     return filename + '-' + get_platform()
@@ -198,7 +201,7 @@ def to_filename(project_name, project_version):
 
 def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                  version='0.0.1', author_name=None, author_url=None,
-                 verbose=1):
+                 python_version=sys.version_info, verbose=1):
     data_files = []
     sys_files = []
     exe_files = []
@@ -221,6 +224,7 @@ def make_package(name, installer_name, install_dir, src_dir, dist_dir,
                         version,
                         author_name,
                         author_url,
+                        python_version,
                         verbose)
     log.info("Creating the inno setup script.")
     script.create()
