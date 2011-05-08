@@ -58,7 +58,7 @@ def get_postfix_name(python):
 
 def get_python_version(python):
     proc = subprocess.Popen(
-            [python, '-c', 'import sys; print sys.version_info'],
+            [python, '-c', 'import sys; print tuple(sys.version_info)'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
     #FIXME: check proc.returncode
