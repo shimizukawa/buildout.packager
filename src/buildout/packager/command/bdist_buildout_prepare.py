@@ -1,6 +1,29 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+import shutil
+import subprocess
 from distutils.core import Command
-import os, sys, shutil
+from distutils import log
+
+
+def popen(cmd):
+    proc = subprocess.Popen(
+            cmd,
+            stdin  = subprocess.PIPE,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE
+        )
+
+    for line in iter(proc.stdout.readline, ''):
+        log.debug(line.rstrip())
+
+    # FIXME: currently, error output write after stdout
+    for line in iter(proc.stderr.readline, ''):
+        log.error(line.rstrip())
+
+    proc.wait()
+    return proc.returncode
 
 
 class bdist_buildout_prepare(Command):
@@ -57,9 +80,15 @@ class bdist_buildout_prepare(Command):
             os.makedirs(os.path.join(cache_dir,'eggs'))
 
         os.chdir(build_dir)
-        #FIXME! don't use os.system!
-        os.system(sys.executable + ' ' + os.path.join(pkg_dir,'bootstrap2.py') + ' init')
-        os.system(os.path.join('bin','buildout -UNc buildout_pre.cfg'))
+
+        cmd = [sys.executable, os.path.join(pkg_dir,'bootstrap2.py'), 'init']
+        popen(cmd)
+
+        cmd = [os.path.join('bin','buildout'), '-UNc', 'buildout_pre.cfg']
+        if self.verbose:
+            cmd.append('-%s' % ('v' * self.verbose))
+        popen(cmd)
+
         os.chdir(cwd)
 
         # reomve non-packaging files/dirs
