@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+from distutils.util import get_platform
 
 class InnoScript(object):
     def __init__(self,
@@ -156,9 +157,7 @@ def to_filename(project_name, project_version):
         sys.version_info[0], sys.version_info[1]
     )
 
-    if sys.platform == 'win32':
-        filename += '-' + sys.platform
-    return filename
+    return filename + '-' + get_platform()
 
 ################################################################
 
