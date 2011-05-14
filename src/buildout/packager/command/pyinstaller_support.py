@@ -8,10 +8,6 @@
 
 import os
 import sys
-import shutil
-from distutils.core import Command
-from distutils import log
-from utils import popen, resolve_interpreter, get_postfix_name
 
 pyinstaller_path = os.path.join(
                         os.path.dirname(__file__),
