@@ -136,7 +136,7 @@ class bdist_buildout_prepare(Command):
         os.chdir(build_dir)
 
         # copy python files
-        if build_python_dir:
+        if build_python_dir and os.path.exists(executable):
             copy_python(os.path.dirname(self.python), build_python_dir)
 
         # bootstrap and build
