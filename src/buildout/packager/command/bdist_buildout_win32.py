@@ -20,7 +20,7 @@ var
 begin
   if CurStep = ssPostInstall then begin
     Python := ExpandConstant('{app}\python\python.exe');
-    PyScript := ExpandConstant('{app}\packages\postinstall.py');
+    PyScript := ExpandConstant('"{app}\packages\postinstall.py"');
 
     if FileExists(Python) then begin
       if Exec(Python , PyScript, ExpandConstant('{pf}\'), SW_SHOW, ewWaitUntilTerminated, ResultCode) then
