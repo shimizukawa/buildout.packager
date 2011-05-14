@@ -14,7 +14,7 @@ pyinstaller_path = os.path.join(
                         'pyinstaller-1.5.zip'
                     )
 if os.path.exists(pyinstaller_path):
-    PYINSTALLER_ENABLE = True
+    ENABLE = True
     sys.path.append(
             os.path.join(
                 pyinstaller_path,
@@ -24,11 +24,11 @@ if os.path.exists(pyinstaller_path):
     import bindepend
     import pefile
 else:
-    PYINSTALLER_ENABLE = False
+    ENABLE = False
 
 
 def find_depends(build_dir):
-    if not PYINSTALLER_ENABLE:
+    if not ENABLE:
         raise RuntimeError(
                 "You can't use PyInstaller.\nPlease read document in '%s'" %
                 os.path.abspath(__file__)

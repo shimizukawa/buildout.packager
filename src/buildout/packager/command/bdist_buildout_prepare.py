@@ -6,7 +6,17 @@ from distutils.core import Command
 from distutils import log
 from utils import popen, resolve_interpreter, get_postfix_name
 
+import py2exe_support
 import pyinstaller_support
+
+
+if py2exe_support.ENABLE:
+    find_depends = py2exe_support.find_depends
+elif pyinstaller_support.ENABLE:
+    find_depends = pyinstaller_support.find_depends
+else:
+    raise RuntimeError("buildout.packager need install py2exe.")
+
 
 def copy_python(src_python_dir, build_python_dir):
     if os.path.exists(build_python_dir):
@@ -43,14 +53,10 @@ def copy_python(src_python_dir, build_python_dir):
 
 
 def copy_depends(build_dir, dest_dir):
-    if not pyinstaller_support.PYINSTALLER_ENABLE:
-        return
-
     log.info("Check dependencies.")
-    depends = pyinstaller_support.find_depends(build_dir)
 
-    for name, path in depends:
-        if path.startswith(dest_dir):
+    for name, path in find_depends(build_dir):
+        if path.lower().startswith(build_dir.lower()):
             continue
         log.info("copying dependency file: %s" % name)
         shutil.copy2(path, os.path.join(dest_dir, name))

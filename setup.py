@@ -10,7 +10,7 @@ long_description = \
 
 classifiers = [
    "Development Status :: 4 - Beta",
-#   "Environment :: Win32 (MS Windows)",
+   "Environment :: Win32 (MS Windows)",
    "Intended Audience :: Developers",
    "License :: OSI Approved :: Python Software Foundation License",
 #   "Operating System :: Microsoft :: Windows :: Windows NT/2000",
@@ -33,6 +33,7 @@ setup(
     package_dir={'': 'src'},
     install_requires=[
        'setuptools',
+       'py2exe',
         # -*- Extra requirements: -*-
     ],
     entry_points="""
