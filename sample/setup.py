@@ -1,8 +1,9 @@
 from setuptools import setup
+from datetime import datetime
 
 setup(
     name='Sphinx',
-    version='1.0',
+    version=datetime.now().strftime('1.0.7.%Y%m%d'),
     author='',
     url='',
     license='',
