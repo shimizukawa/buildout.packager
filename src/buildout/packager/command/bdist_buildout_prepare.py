@@ -6,6 +6,7 @@ from distutils.core import Command
 from distutils import log
 from utils import popen, resolve_interpreter, get_postfix_name
 
+import pyinstaller_support
 
 def copy_python(src_python_dir, build_python_dir):
     if os.path.exists(build_python_dir):
@@ -39,6 +40,20 @@ def copy_python(src_python_dir, build_python_dir):
         path = os.path.join(src_python_dir, filename)
         if os.path.isfile(path):
             shutil.copy2(path, build_python_dir)
+
+
+def copy_depends(build_dir, dest_dir):
+    if not pyinstaller_support.PYINSTALLER_ENABLE:
+        return
+
+    log.info("Check dependencies.")
+    depends = pyinstaller_support.find_depends(build_dir)
+
+    for name, path in depends:
+        if path.startswith(dest_dir):
+            continue
+        log.info("copying dependency file: %s" % name)
+        shutil.copy2(path, os.path.join(dest_dir, name))
 
 
 class bdist_buildout_prepare(Command):
@@ -119,6 +134,7 @@ class bdist_buildout_prepare(Command):
             copy_python(os.path.dirname(self.python), build_python_dir)
 
         # bootstrap and build
+        log.info("bootstrap and build environment.")
         cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']
         popen(cmd)
         cmd = [os.path.join('bin','buildout'), '-UNc', 'buildout_pre.cfg']
@@ -130,10 +146,14 @@ class bdist_buildout_prepare(Command):
         os.chdir(cwd)
 
         # reomve non-packaging files/dirs
+        log.info("remove unused files/dirs")
         for name in ['bin','develop-eggs','parts','buildout_pre.cfg','.installed.cfg']:
             path = os.path.join(build_dir, name)
             if os.path.isdir(path):
                 shutil.rmtree(path)
             else:
                 os.remove(path)
+
+        # copy depends
+        copy_depends(build_dir, build_python_dir)
 
