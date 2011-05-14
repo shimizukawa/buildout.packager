@@ -12,7 +12,7 @@ classifiers = [
    "Development Status :: 4 - Beta",
    "Environment :: Win32 (MS Windows)",
    "Intended Audience :: Developers",
-   "License :: OSI Approved :: Python Software Foundation License",
+   "License :: OSI Approved :: Apache Software License",
 #   "Operating System :: Microsoft :: Windows :: Windows NT/2000",
    "Programming Language :: Python",
    "Topic :: Software Development :: Build Tools",
@@ -29,7 +29,7 @@ setup(
     author='Takayuki SHIMIZUKAWA',
     author_email='shimizukawa at gmail.com',
     url='http://bitbucket.org/shimizukawa/buildout.packager/',
-    license='PSL',
+    license='Apache License 2.0',
     package_dir={'': 'src'},
     install_requires=[
        'setuptools',
