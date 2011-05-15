@@ -40,6 +40,7 @@ setup(
          [distutils.commands]
          bout_src     = buildout.packager.command:bout_src
          bout_wininst = buildout.packager.command:bout_wininst
+         bout_zip     = buildout.packager.command:bout_zip
      """,
 )
 
