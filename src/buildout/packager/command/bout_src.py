@@ -62,7 +62,7 @@ def copy_depends(build_dir, dest_dir):
         shutil.copy2(path, os.path.join(dest_dir, name))
 
 
-class bdist_buildout_prepare(Command):
+class bout_src(Command):
     description = "create a buildout installer"
 
     user_options = [

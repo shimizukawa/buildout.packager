@@ -198,9 +198,9 @@ def to_filename(project_name, project_version, postfix_name=None):
 
 ################################################################
 
-def make_package(name, installer_name, install_dir, src_dir, dist_dir,
-                 version='0.0.1', author_name=None, author_url=None,
-                 postfix_name=None, verbose=1):
+def builder(name, installer_name, install_dir, src_dir, dist_dir,
+           version='0.0.1', author_name=None, author_url=None,
+           postfix_name=None, verbose=1):
     data_files = []
     sys_files = []
     exe_files = []

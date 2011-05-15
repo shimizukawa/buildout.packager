@@ -5,12 +5,12 @@ import sys
 from utils import resolve_interpreter, get_postfix_name
 
 if sys.platform == 'win32':
-    import bdist_buildout_win32 as builder
+    from innosetup_builder import builder
 else:
-    import bdist_buildout_unix as builder
+    from unix_builder import builder
 
 
-class bdist_buildout(Command):
+class bout_wininst(Command):
     description = "create a buildout installer"
 
     user_options = [
@@ -49,7 +49,7 @@ class bdist_buildout(Command):
             self.python = sys.executable
 
     def run (self):
-        cmd_name = 'bdist_buildout_prepare'
+        cmd_name = 'bout_src'
         sub_cmd = self.reinitialize_command(cmd_name)
         for option in ('src_dir', 'build_base', 'dist_dir', 'include_python', 'python'):
             setattr(sub_cmd, option, getattr(self, option))
@@ -60,13 +60,12 @@ class bdist_buildout(Command):
         meta = self.distribution.metadata
 
         #### ŠÂ‹«•Ê‚Ìmake_package‚ğŒÄ‚Ño‚·
-        if builder:
-            builder.make_package(meta.name, meta.name, meta.name,
-                                 build_dir,
-                                 self.dist_dir,
-                                 meta.version,
-                                 meta.author,
-                                 meta.url,
-                                 postfix_name,
-                                 self.verbose)
+        builder(meta.name, meta.name, meta.name,
+                build_dir,
+                self.dist_dir,
+                meta.version,
+                meta.author,
+                meta.url,
+                postfix_name,
+                self.verbose)
 

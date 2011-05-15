@@ -38,8 +38,8 @@ setup(
      ],
      entry_points="""
          [distutils.commands]
-         bdist_buildout = buildout.packager.command.bdist_buildout:bdist_buildout
-         bdist_buildout_prepare = buildout.packager.command.bdist_buildout_prepare:bdist_buildout_prepare
+         bout_src     = buildout.packager.command:bout_src
+         bout_wininst = buildout.packager.command:bout_wininst
      """,
 )
 
