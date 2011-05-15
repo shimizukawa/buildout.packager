@@ -52,7 +52,7 @@ class bout_wininst(Command):
         cmd_name = 'bout_src'
         sub_cmd = self.reinitialize_command(cmd_name)
         for option in ('src_dir', 'build_base', 'dist_dir', 'include_python', 'python'):
-            setattr(sub_cmd, option, getattr(self, option))
+            sub_cmd.initialized_options[option] = getattr(self, option)
         self.run_command(cmd_name) #TODO: skip if prepared
 
         postfix_name = get_postfix_name(self.python)

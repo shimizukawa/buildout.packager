@@ -81,6 +81,7 @@ class bout_src(Command):
         ]
 
     def initialize_options (self):
+        self.initialized_options = {}
         self.src_dir = None
         self.build_base = None
         self.dist_dir = None
@@ -99,6 +100,12 @@ class bout_src(Command):
             self.python = resolve_interpreter(self.python)
         else:
             self.python = sys.executable
+
+        invalid = object()
+        for option in ('src_dir', 'build_base', 'dist_dir', 'include_python', 'python'):
+            value = self.initialized_options.get(option, invalid)
+            if value is not invalid:
+                setattr(self, option, value)
 
     def run(self):
         cwd = os.getcwd() #FIXME: setup.py実行ディレクトリの取得をしたい
