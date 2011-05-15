@@ -119,7 +119,9 @@ class bout_src(Command):
             executable = os.path.join(build_python_dir, os.path.basename(self.python))
             log.info("bdist_src including Python Interpreter at '%s'", executable)
         else:
-            shutil.rmtree(build_python_dir) # TODO: implement bout_clean command and move this line to that.
+            if os.path.exists(build_python_dir):
+                # TODO: implement bout_clean command and move this block.
+                shutil.rmtree(j)
             build_python_dir = None
             executable = sys.executable
 
