@@ -4,10 +4,7 @@ import os
 import sys
 from utils import resolve_interpreter, get_postfix_name
 
-if sys.platform == 'win32':
-    from innosetup_builder import builder
-else:
-    from unix_builder import builder
+# from unix_builder import builder
 
 
 class bout_dist(Command):
@@ -64,12 +61,13 @@ class bout_wininst(bout_dist):
         meta = self.distribution.metadata
 
         #### ŠÂ‹«•Ê‚Ìmake_package‚ğŒÄ‚Ño‚·
-        builder(meta.name, meta.name, meta.name,
-                build_dir,
-                self.dist_dir,
-                meta.version,
-                meta.author,
-                meta.url,
-                postfix_name,
-                self.verbose)
+        import innosetup_builder
+        innosetup_builder.builder(meta.name, meta.name, meta.name,
+                                  build_dir,
+                                  self.dist_dir,
+                                  meta.version,
+                                  meta.author,
+                                  meta.url,
+                                  postfix_name,
+                                  self.verbose)
 
