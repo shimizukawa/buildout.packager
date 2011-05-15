@@ -109,7 +109,8 @@ class bout_src(Command):
 
         if self.include_python:
             build_python_dir = os.path.join(build_dir, 'python')
-            executable = os.path.join(build_python_dir, 'python.exe')
+            executable = os.path.join(build_python_dir, os.path.basename(self.python))
+            log.info("bdist_src including Python Interpreter at '%s'", executable)
         else:
             build_python_dir = None
             executable = sys.executable
