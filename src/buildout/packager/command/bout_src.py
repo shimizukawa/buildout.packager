@@ -113,12 +113,13 @@ class bout_src(Command):
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = os.path.join(build_dir,'cache')
+        build_python_dir = os.path.join(build_dir, 'python')
 
         if self.include_python:
-            build_python_dir = os.path.join(build_dir, 'python')
             executable = os.path.join(build_python_dir, os.path.basename(self.python))
             log.info("bdist_src including Python Interpreter at '%s'", executable)
         else:
+            shutil.rmtree(build_python_dir) # TODO: implement bout_clean command and move this line to that.
             build_python_dir = None
             executable = sys.executable
 
@@ -169,5 +170,7 @@ class bout_src(Command):
                 os.remove(path)
 
         # copy depends
-        copy_depends(build_dir, build_python_dir)
+        # TODO: copy depends when python-interpreter was not copied
+        if build_python_dir:
+            copy_depends(build_dir, build_python_dir)
 
