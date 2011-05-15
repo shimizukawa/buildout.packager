@@ -4,7 +4,7 @@ import sys
 import subprocess
 from distutils.util import get_platform
 from distutils import log
-from utils import get_postfix_name
+from utils import get_postfix_name, to_filename
 
 
 inno_setup_code_section = """
@@ -185,16 +185,6 @@ class InnoScript(object):
         if os.path.exists(self.iss_path):
             os.unlink(self.iss_path)
 
-
-def norm(name):
-    return name.replace('-','_')
-
-
-def to_filename(project_name, project_version, postfix_name=None):
-    filename = "%s-%s" % (norm(project_name), norm(project_version))
-    if postfix_name:
-        filename += '-' + postfix_name
-    return filename
 
 ################################################################
 

@@ -4,7 +4,10 @@ import sys
 import subprocess
 from distutils import log
 
-__all__ = ['popen', 'resolve_interpreter', 'get_postfix_name', 'get_python_version']
+__all__ = [
+    'popen', 'resolve_interpreter', 'get_postfix_name', 'get_python_version',
+    'norm', 'to_filename',
+    ]
 
 
 def popen(cmd):
@@ -65,3 +68,13 @@ def get_python_version(python):
     #FIXME: eval is safe?
     return eval(out)
 
+
+def norm(name):
+    return name.replace('-','_')
+
+
+def to_filename(project_name, project_version, postfix_name=None):
+    filename = "%s-%s" % (norm(project_name), norm(project_version))
+    if postfix_name:
+        filename += '-' + postfix_name
+    return filename
