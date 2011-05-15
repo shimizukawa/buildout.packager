@@ -10,8 +10,8 @@ else:
     from unix_builder import builder
 
 
-class bout_wininst(Command):
-    description = "create a buildout installer"
+class bout_dist(Command):
+    description = "build distribution"
 
     user_options = [
         ('build-base=', 'b',
@@ -47,6 +47,10 @@ class bout_wininst(Command):
             self.python = resolve_interpreter(self.python)
         else:
             self.python = sys.executable
+
+
+class bout_wininst(bout_dist):
+    description = "create a buildout installer for windows."
 
     def run (self):
         cmd_name = 'bout_src'
