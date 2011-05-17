@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from distutils.core import Command
 import os
 import sys
 import shutil
+from distutils.core import Command
 from utils import resolve_interpreter, get_postfix_name, to_filename
 
 # from unix_builder import builder
