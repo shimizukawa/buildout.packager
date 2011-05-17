@@ -2,6 +2,7 @@
 from distutils.core import Command
 import os
 import sys
+import shutil
 from utils import resolve_interpreter, get_postfix_name, to_filename
 
 # from unix_builder import builder
@@ -84,12 +85,21 @@ class bout_zip(bout_dist):
         self.run_command(cmd_name) #TODO: skip if prepared
 
         postfix_name = get_postfix_name(self.python)
+        meta = self.distribution.metadata
         build_dir = os.path.join(
                 cwd, self.build_base, 'buildout-' + postfix_name)
-        meta = self.distribution.metadata
+        pkg_dir = os.path.join(build_dir, 'packages')
+
+        remove_list = []
+        if os.name == 'nt':
+            shutil.copy(os.path.join(pkg_dir, 'setup.bat'), build_dir)
+            remove_list.append(os.path.join(build_dir, 'setup.bat'))
 
         zipfile_name = to_filename(meta.name, meta.version, postfix_name)
         filename = self.make_archive(
                 os.path.join(self.dist_dir, zipfile_name), 'zip',
                 root_dir=build_dir, base_dir=None)
+
+        for f in remove_list:
+            os.remove(f)
 
