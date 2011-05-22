@@ -121,7 +121,7 @@ class bout_src(Command):
         else:
             if os.path.exists(build_python_dir):
                 # TODO: implement bout_clean command and move this block.
-                shutil.rmtree(j)
+                shutil.rmtree(build_python_dir)
             build_python_dir = None
             executable = sys.executable
 
