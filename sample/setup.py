@@ -4,8 +4,8 @@ from datetime import datetime
 setup(
     name='Sphinx',
     version=datetime.now().strftime('1.0.7.%Y%m%d'),
-    author='',
-    url='',
+    author='Sphinx-users.jp',
+    url='http://sphinx-users.jp',
     license='',
     #packages='.',
     #package_dir={'': '.'},
