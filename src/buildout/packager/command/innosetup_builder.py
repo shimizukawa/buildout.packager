@@ -179,7 +179,7 @@ class InnoScript(object):
                 pass
 
         proc.wait()
-
+        return proc.returncode == 0
 
     def cleanup(self):
         if os.path.exists(self.iss_path):
@@ -218,6 +218,6 @@ def builder(name, installer_name, install_dir, src_dir, dist_dir,
     log.info("Creating the inno setup script.")
     script.create()
     log.info("Compiling the inno setup script.")
-    script.compile()
-    script.cleanup()
+    if script.compile():
+        script.cleanup()
 
