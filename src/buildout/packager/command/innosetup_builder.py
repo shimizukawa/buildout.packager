@@ -138,8 +138,8 @@ class InnoScript(object):
 
     def compile(self):
         try:
-            import win32_iscc
-            compiler = win32_iscc.main()
+            import win32_program_finder
+            compiler = win32_program_finder.main('Inno Setup', 'ISCC.exe')
         except:
             compiler = 'ISCC.exe'
 
