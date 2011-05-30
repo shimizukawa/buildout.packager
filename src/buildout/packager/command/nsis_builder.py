@@ -178,11 +178,12 @@ class NSISScript(object):
 #  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2"
 #  DeleteRegKey HKLM SOFTWARE\NSIS_Example2
 
-        print >> ofi, r'RMDir $INSTDIR\cache'
-        print >> ofi, r'RMDir $INSTDIR\packages'
-        print >> ofi, r'RMDir $INSTDIR\parts'
-        print >> ofi, r'RMDir $INSTDIR\bin'
-        print >> ofi, r'RMDir $INSTDIR\develop-eggs'
+        print >> ofi, r'RMDir /r $INSTDIR\bin'
+        print >> ofi, r'RMDir /r $INSTDIR\cache'
+        print >> ofi, r'RMDir /r $INSTDIR\develop-eggs'
+        print >> ofi, r'RMDir /r $INSTDIR\packages'
+        print >> ofi, r'RMDir /r $INSTDIR\parts'
+        print >> ofi, r'RMDir /r $INSTDIR\python'
         print >> ofi, r'Delete $INSTDIR\.installed.cfg'
         print >> ofi, r'Delete $INSTDIR\uninstall.exe'
         print >> ofi, r'Delete $INSTDIR\buildout.cfg'
