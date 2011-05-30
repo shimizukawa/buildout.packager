@@ -32,6 +32,7 @@ class bout_dist(Command):
         self.dist_dir = None
         self.include_python = False
         self.python = None
+        self.compiler = None
 
     def finalize_options (self):
         if self.src_dir is None:
@@ -50,6 +51,23 @@ class bout_dist(Command):
 class bout_wininst(bout_dist):
     description = "create a buildout installer for windows."
 
+    user_options = bout_dist.user_options + [
+        ('compiler=', 'c',
+            "compiler to compile installer. [default: innosetup]"),
+        ]
+
+    def initialize_options(self):
+        bout_dist.initialize_options(self)
+        self.compiler = None
+
+    def finalize_options (self):
+        bout_dist.finalize_options(self)
+        if self.compiler is None:
+            self.compiler = 'innosetup'
+        else:
+            compiler = self.compiler + '_builder'
+            __import__(compiler, globals(), locals())
+
     def run (self):
         cmd_name = 'bout_src'
         sub_cmd = self.reinitialize_command(cmd_name)
@@ -62,15 +80,16 @@ class bout_wininst(bout_dist):
         meta = self.distribution.metadata
 
         #### ä¬ã´ï ÇÃmake_packageÇåƒÇ—èoÇ∑
-        import innosetup_builder
-        innosetup_builder.builder(meta.name, meta.name, meta.name,
-                                  build_dir,
-                                  self.dist_dir,
-                                  meta.version,
-                                  meta.author,
-                                  meta.url,
-                                  postfix_name,
-                                  self.verbose)
+        compiler = self.compiler + '_builder'
+        builder = __import__(compiler, globals(), locals())
+        builder.builder(meta.name, meta.name, meta.name,
+                        build_dir,
+                        self.dist_dir,
+                        meta.version,
+                        meta.author,
+                        meta.url,
+                        postfix_name,
+                        self.verbose)
 
 
 class bout_zip(bout_dist):
