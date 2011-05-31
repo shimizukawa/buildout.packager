@@ -109,10 +109,16 @@ class NSISScript(object):
         print >> ofi, r'SetCompressor lzma'
         print >> ofi
 
-        #print >> ofi, r"[Languages]"
-        #print >> ofi, r'Name: jp; MessagesFile: "compiler:Languages\Japanese.isl"'
-        #print >> ofi
+        print >> ofi, r'; Languages'
+        for lang in (
+                'English.nlf', 'Japanese.nlf', 'Dutch.nlf', 'French.nlf',
+                'German.nlf', 'Korean.nlf', 'Russian.nlf', 'Spanish.nlf',
+                'Swedish.nlf', 'TradChinese.nlf', 'SimpChinese.nlf',
+                'Slovak.nlf',):
+            print >> ofi, r'LoadLanguageFile "${NSISDIR}\Contrib\Language files\%s"' % lang
+        print >> ofi
 
+        print >> ofi, r'; pages'
         print >> ofi, r'Page directory'
         print >> ofi, r'Page instfiles'
         print >> ofi
