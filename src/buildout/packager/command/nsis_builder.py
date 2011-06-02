@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+import tempfile
 from distutils.util import get_platform
 from distutils import log
 from utils import get_postfix_name, to_filename
@@ -40,7 +41,9 @@ class NSISScript(object):
         self.verbose = verbose
         installer_name = to_filename(installer_name, version, postfix_name)
         installer_name += '.exe'
-        self.script_path = os.path.join(src_dir, "%s.nsi" % installer_name)
+
+        temp_path = tempfile.mkdtemp('.nsis', 'buildout.packager-')
+        self.script_path = os.path.join(temp_path, "%s.nsi" % installer_name)
         self.src_dir = src_dir
         if not self.src_dir[-1] in "\\/":
             self.src_dir += os.sep
@@ -97,8 +100,8 @@ class NSISScript(object):
             print >> ofi, r'Section "files"'
             for path in self.data_files:
                 dirname = os.path.join('$INSTDIR', os.path.dirname(path)).rstrip(os.sep)
-                print >> ofi, r'SetOutPath ' + dirname
-                print >> ofi, r'File "%s"' % (path,)
+                print >> ofi, r'SetOutPath %s' % dirname
+                print >> ofi, r'File "%s"' % os.path.join(os.path.abspath(self.src_dir), path)
             print >> ofi, 'SectionEnd'
             print >> ofi
 
