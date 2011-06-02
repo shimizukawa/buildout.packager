@@ -7,34 +7,6 @@ from distutils import log
 from utils import get_postfix_name, to_filename
 
 
-# inno_setup_code_section = """
-# [Code]
-# var
-#   FinishedInstall: Boolean;
-# 
-# procedure CurStepChanged(CurStep: TSetupStep);
-# var
-#   ResultCode: Integer;
-#   Python: String;
-#   PyScript: String;
-# begin
-#   if CurStep = ssPostInstall then begin
-#     Python := ExpandConstant('{app}\python\python.exe');
-#     PyScript := ExpandConstant('"{app}\packages\postinstall.py"');
-# 
-#     if FileExists(Python) then begin
-#       if Exec(Python , PyScript, ExpandConstant('{pf}\'), SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-#         FinishedInstall := True;
-#     end else
-#       if ShellExec('', 'python', PyScript, ExpandConstant('{pf}\'), SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-#         FinishedInstall := True;
-# 
-#     if not FinishedInstall then
-#       MsgBox('PostInstall:' #13#13 'Execution of python.exe failed. ' + SysErrorMessage(ResultCode) + '.', mbError, MB_OK)
-#   end;
-# end;
-# 
-# 
 # function IsNeedsAddPath(Param: string): boolean;
 # var
 #   OrigPath: string;
@@ -48,8 +20,6 @@ from utils import get_postfix_name, to_filename
 #   // Pos() returns 0 if not found
 #   Result := Pos(';' + Param + ';', ';' + OrigPath + ';') = 0;
 # end;
-# 
-# """
 
 
 class NSISScript(object):
@@ -147,8 +117,15 @@ class NSISScript(object):
         #print >> ofi, 'Name: "{group}\Uninstall %s"; Filename: "{uninstallexe}"' % self.name
         #print >> ofi
 
-        print >> ofi, r'Section "registry"'
+        ## TODO: when using pre-installed python interpreter, this code will stuck.
+        ## TODO: check return code $0
+        print >> ofi, r'Section "postinstall"'
+        print >> ofi, r'''nsExec::ExecToLog  '"$INSTDIR\python\python.exe" "$INSTDIR\packages\postinstall.py"' '''
+        print >> ofi, r'Pop $0'
+        print >> ofi, r'SectionEnd'
+        print >> ofi
 
+        print >> ofi, r'Section "registry"'
         d = dict(name=self.name, version=self.version, author_name=self.author_name)
         #print >> ofi, r'InstallDirRegKey HKLM "Software\%(author_name)s\%(name)s" "Install_Dir"' % d
         print >> ofi, r'WriteRegStr HKLM SOFTWARE\%(author_name)s\%(name)s "Install_Dir" "$INSTDIR"' % d
@@ -164,7 +141,7 @@ class NSISScript(object):
         #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; Flags: uninsdeletekey' % d
         #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"' % d
         #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; ValueType: string; ValueName: "Revision"; ValueData: "%(version)s"' % d
-        #print >> ofi
+        print >> ofi
 
         # registry for windows uninstall menu
         print >> ofi, r'WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "DisplayName" "%(name)s"'
@@ -197,9 +174,6 @@ class NSISScript(object):
         print >> ofi, r'Delete $INSTDIR\uninstall.exe'
         print >> ofi, r'SectionEnd'
         print >> ofi
-
-        #print >> ofi, inno_setup_code_section
-        #print >> ofi
 
         ofi.close()
 
