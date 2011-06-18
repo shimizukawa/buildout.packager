@@ -3,24 +3,147 @@ import os
 import sys
 import subprocess
 import tempfile
-from distutils.util import get_platform
 from distutils import log
-from utils import get_postfix_name, to_filename
+from utils import to_filename
 
 
-# function IsNeedsAddPath(Param: string): boolean;
-# var
-#   OrigPath: string;
-# begin
-#   if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OrigPath)
-#   then begin
-#     Result := True;
-#     exit;
-#   end;
-#   // look for the path with leading and trailing semicolon
-#   // Pos() returns 0 if not found
-#   Result := Pos(';' + Param + ';', ';' + OrigPath + ';') = 0;
-# end;
+MAIN_SCRIPT = r"""\
+; WARNING: This script has been created by buildout.packager.
+; Changes to this script will be overwritten the next time buildout.packager is run!
+
+!include "MUI2.nsh"
+!include "EnvVarUpdate.nsh"
+
+Name "%(self_name)s"
+InstallDir $PROGRAMFILES\%(self_install_dir)s
+OutFile "%(distribution_full_path)s"
+SetCompressor lzma
+RequestExecutionLevel user
+
+;; AppVerName=%(name_version)s
+;; DefaultGroupName=%(self_name)s
+;; if self.author_name:
+;;     AppPublisher=%(self_author_name)s
+;; if self.author_url:
+;;     AppPublisherURL=%(self_author_url)s
+;;     AppSupportURL=%(self_author_url)s
+
+; start menu
+Var StartMenuFolder
+
+; pages
+Page directory
+!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
+Page instfiles
+
+
+; Languages
+!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "Japanese"
+!insertmacro MUI_LANGUAGE "Dutch"
+!insertmacro MUI_LANGUAGE "French"
+!insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Korean"
+!insertmacro MUI_LANGUAGE "Russian"
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "Swedish"
+!insertmacro MUI_LANGUAGE "TradChinese"
+!insertmacro MUI_LANGUAGE "SimpChinese"
+!insertmacro MUI_LANGUAGE "Slovak"
+
+Section "files"
+
+    %(data_files)s
+
+SectionEnd
+
+Section "sysfiles"
+
+    SetOutPath $SYSDIR
+    %(sys_files)s
+
+SectionEnd
+
+
+Section "postinstall"
+
+    ; TODO: when using pre-installed python interpreter, this code will stuck.
+    ; TODO: check return code $0
+
+    nsExec::ExecToLog '"$INSTDIR\python\python.exe" "$INSTDIR\packages\postinstall.py"'
+    Pop $0
+
+SectionEnd
+
+
+Section "registry"
+
+    WriteRegStr HKLM SOFTWARE\%(self_author_name)s\%(self_name)s "Install_Dir" "$INSTDIR"
+
+    ;InstallDirRegKey HKLM "Software\%(self_author_name)s\%(self_name)s" "Install_Dir"
+    ;Root: HKCU; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)s"; Flags: uninsdeletekey
+
+    ; add bin to PATH environment variable.
+    ${EnvVarUpdate} $0 "PATH" "A" "HKCU" "$INSTDIR\bin"
+
+    ;# FIXME: if user want to install on local-user-mode, below config prevent installation.
+    ;;Root: HKLM; Subkey: "Software\%(self_author_name)s"; Flags: uninsdeletekeyifempty
+    ;;Root: HKLM; Subkey: "Software\%(self_author_name)s\%(self_name)s"; Flags: uninsdeletekeyifempty
+    ;;Root: HKLM; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)s"; Flags: uninsdeletekey
+    ;;Root: HKLM; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)s"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
+    ;;Root: HKLM; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)s"; ValueType: string; ValueName: "Revision"; ValueData: "%(self_version)s"
+
+
+    # registry for windows uninstall menu
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "DisplayName" "%(self_name)s"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "UninstallString" \'"$INSTDIR\uninstall.exe"\'
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "NoModify" 1
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "NoRepair" 1
+    WriteUninstaller "uninstall.exe"
+
+    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+      ;Create shortcuts
+      CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+      CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+      CreateShortCut "$SMPROGRAMS\$StartMenuFolder\versions.lnk" "$INSTDIR\versions.txt"
+
+    !insertmacro MUI_STARTMENU_WRITE_END
+
+SectionEnd
+
+
+; uninstall
+UninstPage uninstConfirm
+UninstPage instfiles
+
+Section "Uninstall"
+
+    ;;  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2"
+    ;;  DeleteRegKey HKLM SOFTWARE\NSIS_Example2
+
+    RMDir /r $INSTDIR\bin
+    RMDir /r $INSTDIR\cache
+    RMDir /r $INSTDIR\develop-eggs
+    RMDir /r $INSTDIR\packages
+    RMDir /r $INSTDIR\parts
+    RMDir /r $INSTDIR\python
+    Delete $INSTDIR\.installed.cfg
+    Delete $INSTDIR\uninstall.exe
+    Delete $INSTDIR\buildout.cfg
+    Delete $INSTDIR\buildout_post.cfg
+    Delete $INSTDIR\uninstall.exe
+
+    !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+
+    Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$StartMenuFolder\versions.lnk"
+    RMDir "$SMPROGRAMS\$StartMenuFolder"
+    ${un.EnvVarUpdate} $0 "PATH" "R" "HKCU" "$INSTDIR\bin"
+
+SectionEnd
+
+"""
 
 
 class NSISScript(object):
@@ -63,147 +186,27 @@ class NSISScript(object):
         return pathname[len(self.src_dir):]
 
     def create(self):
-        ofi = open(self.script_path, "w")
-        name = self.name
-        print >> ofi, "; WARNING: This script has been created by buildout.packager."
-        print >> ofi, "; Changes to this script will be overwritten the next time buildout.packager is run!"
-        print >> ofi, r'!include "MUI2.nsh"'
-        print >> ofi, r'!include "EnvVarUpdate.nsh"'
-        print >> ofi, r'Name "%s"' % name
-        #print >> ofi, r"AppVerName=%s" % name + ' ' + self.version
-        print >> ofi, r'InstallDir $PROGRAMFILES\%s' % (self.install_dir)
-        #print >> ofi, r"DefaultGroupName=%s" % name
-        #print >> ofi, r"PrivilegesRequired=admin"
-        print >> ofi, r'RequestExecutionLevel user'
-        #if self.author_name:
-        #    print >> ofi, r"AppPublisher=%s" % self.author_name
-        #if self.author_url:
-        #    print >> ofi, r"AppPublisherURL=%s" % self.author_url
-        #    print >> ofi, r"AppSupportURL=%s" % self.author_url
-        print >> ofi, r'OutFile "%s"' % os.path.join(self.dist_dir, self.installer_name)
-        print >> ofi, r'SetCompressor lzma'
-        print >> ofi
+        datastore = dict(('self_' + k, getattr(self, k)) for k in dir(self))
+        datastore['name_version'] = self.name + ' ' + self.version
+        datastore['distribution_full_path'] = os.path.join(
+                self.dist_dir, self.installer_name)
 
-        # start menu
-        print >> ofi, r'Var StartMenuFolder'
-        print >> ofi
+        data_files = []
+        for path in self.data_files:
+            dirname = os.path.join('$INSTDIR', os.path.dirname(path)).rstrip(os.sep)
+            filename = os.path.join(os.path.abspath(self.src_dir), path)
+            data_files.append(r'SetOutPath %s' % dirname)
+            data_files.append(r'File "%s"' % filename)
+        datastore['data_files'] = '\n'.join(data_files)
 
-        # pages
-        print >> ofi, r'; pages'
-        print >> ofi, r'Page directory'
-        print >> ofi, r'!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder'
-        print >> ofi, r'Page instfiles'
-        print >> ofi
+        sys_files = []
+        for path in self.sys_files:
+            sys_files.append(r'File "%s"' % path)
+        datastore['sys_files'] = '\n'.join(sys_files)
 
-        print >> ofi, r'; Languages'
-        for lang in (
-                'English', 'Japanese', 'Dutch', 'French', 'German', 'Korean',
-                'Russian', 'Spanish', 'Swedish', 'TradChinese', 'SimpChinese',
-                'Slovak',):
-            print >> ofi, r'!insertmacro MUI_LANGUAGE "%s"' % lang
-        print >> ofi
+        with open(self.script_path, "w") as f:
+            f.write(MAIN_SCRIPT % datastore)
 
-        if self.data_files:
-            print >> ofi, r'Section "files"'
-            for path in self.data_files:
-                dirname = os.path.join('$INSTDIR', os.path.dirname(path)).rstrip(os.sep)
-                print >> ofi, r'SetOutPath %s' % dirname
-                print >> ofi, r'File "%s"' % os.path.join(os.path.abspath(self.src_dir), path)
-            print >> ofi, 'SectionEnd'
-            print >> ofi
-
-        if self.sys_files:
-            print >> ofi, r'Section "sysfiles"'
-            print >> ofi, r'SetOutPath $SYSDIR'
-            for path in self.sys_files:
-                print >> ofi, r'File "%s"' % (path,)
-            print >> ofi, 'SectionEnd'
-            print >> ofi
-
-        #print >> ofi, r"[Icons]"
-        #for name, path in self.exe_files:
-        #    print >> ofi, r'Name: "{group}\%s"; Filename: "{app}\%s"' % \
-        #          (name, path)
-        #print >> ofi, 'Name: "{group}\Uninstall %s"; Filename: "{uninstallexe}"' % self.name
-        #print >> ofi
-
-        ## TODO: when using pre-installed python interpreter, this code will stuck.
-        ## TODO: check return code $0
-        print >> ofi, r'Section "postinstall"'
-        print >> ofi, r'${EnvVarUpdate} $0 "PATH" "A" "HKCU" "$INSTDIR\bin"'
-        print >> ofi, r'''nsExec::ExecToLog  '"$INSTDIR\python\python.exe" "$INSTDIR\packages\postinstall.py"' '''
-        print >> ofi, r'Pop $0'
-        print >> ofi, r'SectionEnd'
-        print >> ofi
-
-        print >> ofi, r'Section "registry"'
-        d = dict(name=self.name, version=self.version, author_name=self.author_name)
-        #print >> ofi, r'InstallDirRegKey HKLM "Software\%(author_name)s\%(name)s" "Install_Dir"' % d
-        print >> ofi, r'WriteRegStr HKLM SOFTWARE\%(author_name)s\%(name)s "Install_Dir" "$INSTDIR"' % d
-        #print >> ofi, r'Root: HKCU; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; Flags: uninsdeletekey' % d
-
-        # add path
-        #print >> ofi, r'''Root: HKCU; Subkey: "Environment"; ValueName: "Path"; ValueType: "expandsz"; ValueData: "{olddata};{app}\bin;";'''  # Check: IsNeedsAddPath("{app}\bin;");
-
-        # registry
-        # FIXME: if user want to install on local-user-mode, below config prevent installation.
-        #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s"; Flags: uninsdeletekeyifempty' % d
-        #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s"; Flags: uninsdeletekeyifempty' % d
-        #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; Flags: uninsdeletekey' % d
-        #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"' % d
-        #print >> ofi, r'Root: HKLM; Subkey: "Software\%(author_name)s\%(name)s\%(version)s"; ValueType: string; ValueName: "Revision"; ValueData: "%(version)s"' % d
-        print >> ofi
-
-        # registry for windows uninstall menu
-        print >> ofi, r'WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "DisplayName" "%(name)s"'
-        print >> ofi, r'WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "UninstallString" \'"$INSTDIR\uninstall.exe"\''
-        print >> ofi, r'WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "NoModify" 1'
-        print >> ofi, r'WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "NoRepair" 1'
-        print >> ofi, r'WriteUninstaller "uninstall.exe"'
-
-        print >> ofi, r'!insertmacro MUI_STARTMENU_WRITE_BEGIN Application'
-        print >> ofi
-        print >> ofi, r'  ;Create shortcuts'
-        print >> ofi, r'  CreateDirectory "$SMPROGRAMS\$StartMenuFolder"'
-        print >> ofi, r'  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"'
-        print >> ofi, r'  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\versions.lnk" "$INSTDIR\versions.txt"'
-        print >> ofi
-        print >> ofi, r'!insertmacro MUI_STARTMENU_WRITE_END'
-        print >> ofi
-        print >> ofi, r'SectionEnd'
-        print >> ofi
-
-        # uninstall
-        print >> ofi, r'UninstPage uninstConfirm'
-        print >> ofi, r'UninstPage instfiles'
-        print >> ofi
-        print >> ofi, r'Section "Uninstall"'
-
-#  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2"
-#  DeleteRegKey HKLM SOFTWARE\NSIS_Example2
-
-        print >> ofi, r'RMDir /r $INSTDIR\bin'
-        print >> ofi, r'RMDir /r $INSTDIR\cache'
-        print >> ofi, r'RMDir /r $INSTDIR\develop-eggs'
-        print >> ofi, r'RMDir /r $INSTDIR\packages'
-        print >> ofi, r'RMDir /r $INSTDIR\parts'
-        print >> ofi, r'RMDir /r $INSTDIR\python'
-        print >> ofi, r'Delete $INSTDIR\.installed.cfg'
-        print >> ofi, r'Delete $INSTDIR\uninstall.exe'
-        print >> ofi, r'Delete $INSTDIR\buildout.cfg'
-        print >> ofi, r'Delete $INSTDIR\buildout_post.cfg'
-        print >> ofi, r'Delete $INSTDIR\uninstall.exe'
-        print >> ofi
-        print >> ofi, r'!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder'
-        print >> ofi
-        print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"'
-        print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\versions.lnk"'
-        print >> ofi, r'RMDir "$SMPROGRAMS\$StartMenuFolder"'
-        print >> ofi, r'${un.EnvVarUpdate} $0 "PATH" "R" "HKCU" "$INSTDIR\bin"'
-        print >> ofi, r'SectionEnd'
-        print >> ofi
-
-        ofi.close()
 
     def compile(self):
         import win32_program_finder
