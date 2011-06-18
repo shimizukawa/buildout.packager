@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import shutil
 from distutils import log
-from utils import to_filename
+from buildout.packager.command.utils import to_filename
 
 NSIS_BULIDER_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -215,7 +215,7 @@ class NSISScript(object):
 
 
     def compile(self):
-        import win32_program_finder
+        from buildout.packager.command import win32_program_finder
         compiler = win32_program_finder.main('NSIS', 'makensis.exe')
         if compiler is None:
             compiler = 'makensis.exe'
