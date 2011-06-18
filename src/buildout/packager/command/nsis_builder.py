@@ -67,6 +67,7 @@ class NSISScript(object):
         name = self.name
         print >> ofi, "; WARNING: This script has been created by buildout.packager."
         print >> ofi, "; Changes to this script will be overwritten the next time buildout.packager is run!"
+        print >> ofi, r'!include "MUI2.nsh"'
         print >> ofi, r'Name "%s"' % name
         #print >> ofi, r"AppVerName=%s" % name + ' ' + self.version
         print >> ofi, r'InstallDir $PROGRAMFILES\%s' % (self.install_dir)
@@ -82,18 +83,23 @@ class NSISScript(object):
         print >> ofi, r'SetCompressor lzma'
         print >> ofi
 
-        print >> ofi, r'; Languages'
-        for lang in (
-                'English.nlf', 'Japanese.nlf', 'Dutch.nlf', 'French.nlf',
-                'German.nlf', 'Korean.nlf', 'Russian.nlf', 'Spanish.nlf',
-                'Swedish.nlf', 'TradChinese.nlf', 'SimpChinese.nlf',
-                'Slovak.nlf',):
-            print >> ofi, r'LoadLanguageFile "${NSISDIR}\Contrib\Language files\%s"' % lang
+        # start menu
+        print >> ofi, r'Var StartMenuFolder'
         print >> ofi
 
+        # pages
         print >> ofi, r'; pages'
         print >> ofi, r'Page directory'
+        print >> ofi, r'!insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder'
         print >> ofi, r'Page instfiles'
+        print >> ofi
+
+        print >> ofi, r'; Languages'
+        for lang in (
+                'English', 'Japanese', 'Dutch', 'French', 'German', 'Korean',
+                'Russian', 'Spanish', 'Swedish', 'TradChinese', 'SimpChinese',
+                'Slovak',):
+            print >> ofi, r'!insertmacro MUI_LANGUAGE "%s"' % lang
         print >> ofi
 
         if self.data_files:
@@ -152,6 +158,15 @@ class NSISScript(object):
         print >> ofi, r'WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "NoModify" 1'
         print >> ofi, r'WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(name)s" "NoRepair" 1'
         print >> ofi, r'WriteUninstaller "uninstall.exe"'
+
+        print >> ofi, r'!insertmacro MUI_STARTMENU_WRITE_BEGIN Application'
+        print >> ofi
+        print >> ofi, r'  ;Create shortcuts'
+        print >> ofi, r'  CreateDirectory "$SMPROGRAMS\$StartMenuFolder"'
+        print >> ofi, r'  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"'
+        print >> ofi
+        print >> ofi, r'!insertmacro MUI_STARTMENU_WRITE_END'
+        print >> ofi
         print >> ofi, r'SectionEnd'
         print >> ofi
 
@@ -175,6 +190,11 @@ class NSISScript(object):
         print >> ofi, r'Delete $INSTDIR\buildout.cfg'
         print >> ofi, r'Delete $INSTDIR\buildout_post.cfg'
         print >> ofi, r'Delete $INSTDIR\uninstall.exe'
+        print >> ofi
+        print >> ofi, r'!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder'
+        print >> ofi
+        print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"'
+        print >> ofi, r'RMDir "$SMPROGRAMS\$StartMenuFolder"'
         print >> ofi, r'SectionEnd'
         print >> ofi
 
