@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import shutil
 from distutils import log
 from utils import to_filename
 
@@ -165,8 +166,9 @@ class NSISScript(object):
         installer_name = to_filename(installer_name, version, postfix_name)
         installer_name += '.exe'
 
-        temp_path = tempfile.mkdtemp('.nsis', 'buildout.packager-')
-        self.script_path = os.path.join(temp_path, "%s.nsi" % installer_name)
+        self.temp_path = tempfile.mkdtemp('.nsis', 'buildout.packager-')
+        self.script_path = os.path.join(
+                self.temp_path, "%s.nsi" % installer_name)
         self.src_dir = src_dir
         if not self.src_dir[-1] in "\\/":
             self.src_dir += os.sep
@@ -256,6 +258,8 @@ class NSISScript(object):
     def cleanup(self):
         if os.path.exists(self.script_path):
             os.unlink(self.script_path)
+        if os.path.exists(self.temp_path):
+            shutil.rmtree(self.temp_path)
 
 
 ################################################################
