@@ -7,12 +7,15 @@ import shutil
 from distutils import log
 from utils import to_filename
 
+NSIS_BULIDER_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 MAIN_SCRIPT = r"""\
 ; WARNING: This script has been created by buildout.packager.
 ; Changes to this script will be overwritten the next time buildout.packager is run!
 
 !include "MUI2.nsh"
+!addincludedir "%(nsis_builder_dir)s"
 !include "EnvVarUpdate.nsh"
 
 Name "%(self_name)s"
@@ -189,6 +192,7 @@ class NSISScript(object):
 
     def create(self):
         datastore = dict(('self_' + k, getattr(self, k)) for k in dir(self))
+        datastore['nsis_builder_dir'] = NSIS_BULIDER_DIR
         datastore['name_version'] = self.name + ' ' + self.version
         datastore['distribution_full_path'] = os.path.join(
                 self.dist_dir, self.installer_name)
