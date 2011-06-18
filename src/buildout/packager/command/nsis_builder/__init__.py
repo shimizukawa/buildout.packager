@@ -24,7 +24,7 @@ OutFile "%(distribution_full_path)s"
 SetCompressor lzma
 RequestExecutionLevel user
 
-;; AppVerName=%(name_version)s
+;; AppVerName=%(self_name)s %(self_version)s
 ;; DefaultGroupName=%(self_name)s
 ;; if self.author_name:
 ;;     AppPublisher=%(self_author_name)s
@@ -193,7 +193,6 @@ class NSISScript(object):
     def create(self):
         datastore = dict(('self_' + k, getattr(self, k)) for k in dir(self))
         datastore['nsis_builder_dir'] = NSIS_BULIDER_DIR
-        datastore['name_version'] = self.name + ' ' + self.version
         datastore['distribution_full_path'] = os.path.join(
                 self.dist_dir, self.installer_name)
 
