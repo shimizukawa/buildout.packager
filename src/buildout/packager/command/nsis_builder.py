@@ -166,6 +166,7 @@ class NSISScript(object):
         print >> ofi, r'  ;Create shortcuts'
         print >> ofi, r'  CreateDirectory "$SMPROGRAMS\$StartMenuFolder"'
         print >> ofi, r'  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"'
+        print >> ofi, r'  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\versions.lnk" "$INSTDIR\versions.txt"'
         print >> ofi
         print >> ofi, r'!insertmacro MUI_STARTMENU_WRITE_END'
         print >> ofi
@@ -196,6 +197,7 @@ class NSISScript(object):
         print >> ofi, r'!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder'
         print >> ofi
         print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"'
+        print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\versions.lnk"'
         print >> ofi, r'RMDir "$SMPROGRAMS\$StartMenuFolder"'
         print >> ofi, r'${un.EnvVarUpdate} $0 "PATH" "R" "HKCU" "$INSTDIR\bin"'
         print >> ofi, r'SectionEnd'
