@@ -68,6 +68,7 @@ class NSISScript(object):
         print >> ofi, "; WARNING: This script has been created by buildout.packager."
         print >> ofi, "; Changes to this script will be overwritten the next time buildout.packager is run!"
         print >> ofi, r'!include "MUI2.nsh"'
+        print >> ofi, r'!include "EnvVarUpdate.nsh"'
         print >> ofi, r'Name "%s"' % name
         #print >> ofi, r"AppVerName=%s" % name + ' ' + self.version
         print >> ofi, r'InstallDir $PROGRAMFILES\%s' % (self.install_dir)
@@ -129,6 +130,7 @@ class NSISScript(object):
         ## TODO: when using pre-installed python interpreter, this code will stuck.
         ## TODO: check return code $0
         print >> ofi, r'Section "postinstall"'
+        print >> ofi, r'${EnvVarUpdate} $0 "PATH" "A" "HKCU" "$INSTDIR\bin"'
         print >> ofi, r'''nsExec::ExecToLog  '"$INSTDIR\python\python.exe" "$INSTDIR\packages\postinstall.py"' '''
         print >> ofi, r'Pop $0'
         print >> ofi, r'SectionEnd'
@@ -195,6 +197,7 @@ class NSISScript(object):
         print >> ofi
         print >> ofi, r'Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"'
         print >> ofi, r'RMDir "$SMPROGRAMS\$StartMenuFolder"'
+        print >> ofi, r'${un.EnvVarUpdate} $0 "PATH" "R" "HKCU" "$INSTDIR\bin"'
         print >> ofi, r'SectionEnd'
         print >> ofi
 
