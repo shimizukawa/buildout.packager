@@ -9,10 +9,11 @@ def main(app_dir):
     pkg_dir = os.path.join(app_dir, 'packages')
     bootstrap = os.path.join(pkg_dir, 'bootstrap2.py')
     buildout = os.path.join('bin', 'buildout')
+    cfg = 'buildout_post.cfg'
 
     os.chdir(app_dir)
-    subprocess.check_call([sys.executable, bootstrap, '-d', 'init'])
-    subprocess.check_call([buildout, '-UNovc', 'buildout_post.cfg'])
+    subprocess.check_call([sys.executable, bootstrap, '-dc', cfg])
+    subprocess.check_call([buildout, '-UNovc', cfg])
     os.chdir(cwd)
 
 
