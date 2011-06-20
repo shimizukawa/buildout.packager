@@ -3,7 +3,7 @@ from datetime import datetime
 
 setup(
     name='Sphinx',
-    version=datetime.now().strftime('1.0.7.%Y%m%d'),
+    version=datetime.now().strftime('1.0.7.alpha%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
