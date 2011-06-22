@@ -8,8 +8,8 @@ from utils import get_postfix_name, to_filename
 
 
 MAIN_SCRIPT = r"""
-; WARNING: This script has been created by py2exe. Changes to this script
-; will be overwritten the next time py2exe is run!
+; WARNING: This script has been created by buildout.packager.
+; Changes to this script will be overwritten the next time bulidout.packager is run!
 [Setup]
 AppName=%(self_name)s
 AppVerName=%(self_name)s %(self_version)s
