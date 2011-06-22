@@ -34,6 +34,7 @@ Name: jp; MessagesFile: "compiler:Languages\Japanese.isl"
 [Icons]
 %(icons)s
 Name: "{group}\Uninstall %(self_name)s"; Filename: "{uninstallexe}"
+Name: "{group}\versions"; Filename: "{app}\versions.txt"
 
 [Registry]
 Root: HKCU; Subkey: "Software\%(self_author_name)s"; Flags: uninsdeletekeyifempty
