@@ -109,7 +109,7 @@ Section "registry"
 
       ;Create shortcuts
       CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-      CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+      CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall %(self_name)s.lnk" "$INSTDIR\Uninstall.exe"
       CreateShortCut "$SMPROGRAMS\$StartMenuFolder\versions.lnk" "$INSTDIR\versions.txt"
 
     !insertmacro MUI_STARTMENU_WRITE_END
