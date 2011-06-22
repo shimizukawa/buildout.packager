@@ -3,7 +3,9 @@ Todos
 
 for Windows
 ~~~~~~~~~~~
-* use innosetup package
+* add `bin` directory to PATH environment (innosetup)
+* display some description fo installer pages (nsis)
+* display application icon (innosetup / nsis)
 
 
 for Unix
@@ -13,6 +15,5 @@ for Unix
 
 Known Issues
 ~~~~~~~~~~~~~
-
 * Process restart probrem when zc.buildout upgrate it by oneself.
 
