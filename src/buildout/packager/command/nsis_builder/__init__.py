@@ -140,7 +140,7 @@ Section "Uninstall"
 
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
 
-    Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$StartMenuFolder\Uninstall %(self_name)s.lnk"
     Delete "$SMPROGRAMS\$StartMenuFolder\versions.lnk"
     RMDir "$SMPROGRAMS\$StartMenuFolder"
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKCU" "$INSTDIR\bin"
