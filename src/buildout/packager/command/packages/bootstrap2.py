@@ -24,9 +24,8 @@ import os, shutil, sys, tempfile, urllib2
 from optparse import OptionParser
 
 #tmpeggs = tempfile.mkdtemp()
-CACHE = 'cache'
 sys.path.insert(0, 'packages')
-tmpeggs = os.path.join(CACHE,'eggs')
+tmpeggs = 'eggs'
 
 is_jython = sys.platform.startswith('java')
 

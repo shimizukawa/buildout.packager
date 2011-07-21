@@ -112,7 +112,7 @@ class bout_src(Command):
         build_dir = os.path.join(cwd, self.build_base, 'buildout-' + get_postfix_name(self.python))
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
-        cache_dir = os.path.join(build_dir,'cache')
+        cache_dir = build_dir
         build_python_dir = os.path.join(build_dir, 'python')
 
         if self.include_python:
@@ -139,8 +139,6 @@ class bout_src(Command):
                 shutil.copy(src, os.path.join(build_dir, name)) #FIXME: check overwriting
         shutil.copy(os.path.join(cwd, 'buildout.cfg'), build_dir) #FIXME: buildout.cfg exist?
 
-        if not os.path.exists(os.path.join(cache_dir,'download-cache')):
-            os.makedirs(os.path.join(cache_dir,'download-cache'))
         if not os.path.exists(os.path.join(cache_dir,'eggs')):
             os.makedirs(os.path.join(cache_dir,'eggs'))
 
@@ -166,10 +164,11 @@ class bout_src(Command):
         log.info("remove unused files/dirs")
         for name in ['bin','develop-eggs','parts','buildout_pre.cfg','.installed.cfg']:
             path = os.path.join(build_dir, name)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            else:
-                os.remove(path)
+            if os.path.exists(path):
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
 
         # copy depends
         # TODO: copy depends when python-interpreter was not copied
