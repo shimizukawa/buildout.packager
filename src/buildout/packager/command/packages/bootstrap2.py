@@ -113,6 +113,8 @@ if is_jython:
            ).wait() == 0
 
 else:
+    for key in [x for x in os.environ if x.startswith('PYTHON')]:  # avoid PYTHONPATH
+        del os.environ[key]                                        # for installation
     assert os.spawnle(
         os.P_WAIT, sys.executable, quote (sys.executable),
         '-c', quote (cmd), '-mqNxd', quote (tmpeggs), 'zc.buildout' + VERSION,
