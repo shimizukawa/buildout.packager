@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import string
 import shutil
+import textwrap
 from distutils.core import Command
 from distutils import log
 from utils import popen, resolve_interpreter, get_postfix_name
@@ -62,6 +64,16 @@ def copy_depends(build_dir, dest_dir):
         shutil.copy2(path, os.path.join(dest_dir, name))
 
 
+def template(src, dst, **kw):
+    f = open(src, 'rt')
+    tmpl = f.read()
+    f.close()
+    output = string.Template(tmpl).safe_substitute(kw)
+    f = open(dst, 'wt')
+    f.write(output)
+    f.close()
+
+
 class bout_src(Command):
     description = "create a buildout installer"
 
@@ -108,12 +120,16 @@ class bout_src(Command):
                 setattr(self, option, value)
 
     def run(self):
-        cwd = os.getcwd() #FIXME: setup.py実行ディレクトリの取得をしたい
+        meta = self.distribution.metadata
+        options = dict(self.distribution.command_options['bout_config'])
+        cwd = os.path.abspath(os.getcwd()) #FIXME: setup.py実行ディレクトリの取得をしたい
         build_dir = os.path.join(cwd, self.build_base, 'buildout-' + get_postfix_name(self.python))
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = build_dir
+        eggs_dir = os.path.join(cache_dir, 'eggs')
         build_python_dir = os.path.join(build_dir, 'python')
+        buildout_cmd = os.path.join('bin','buildout')
 
         if self.include_python:
             executable = os.path.join(build_python_dir, os.path.basename(self.python))
@@ -135,12 +151,16 @@ class bout_src(Command):
             src = os.path.join(pkg_base_dir, name)
             if os.path.isfile(src):
                 shutil.copy(src, os.path.join(pkg_dir, name))
-            if os.path.split(src)[1] in ('buildout_pre.cfg', 'buildout_post.cfg'):
-                shutil.copy(src, os.path.join(build_dir, name)) #FIXME: check overwriting
-        shutil.copy(os.path.join(cwd, 'buildout.cfg'), build_dir) #FIXME: buildout.cfg exist?
 
-        if not os.path.exists(os.path.join(cache_dir,'eggs')):
-            os.makedirs(os.path.join(cache_dir,'eggs'))
+        for name in ('buildout_pre.cfg', 'buildout.cfg'):
+            template(
+                    os.path.join(pkg_base_dir, name),
+                    os.path.join(build_dir, name),
+                    target_egg=meta.name,
+                    buildout_option=textwrap.dedent(options['buildout_option'][1]))
+
+        if not os.path.exists(eggs_dir):
+            os.makedirs(eggs_dir)
 
         os.chdir(build_dir)
 
@@ -152,7 +172,9 @@ class bout_src(Command):
         log.info("bootstrap and build environment.")
         cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']
         popen(cmd)
-        cmd = [os.path.join('bin','buildout'), '-UNc', 'buildout_pre.cfg']
+        cmd = [buildout_cmd, 'setup', cwd, 'bdist_egg', '-d', eggs_dir]
+        popen(cmd)
+        cmd = [buildout_cmd, '-UNc', 'buildout_pre.cfg']
         if self.verbose:
             cmd.append('-%s' % ('v' * self.verbose))
         popen(cmd)

@@ -9,7 +9,7 @@ def main(app_dir):
     pkg_dir = os.path.join(app_dir, 'packages')
     bootstrap = os.path.join(pkg_dir, 'bootstrap2.py')
     buildout = os.path.join('bin', 'buildout')
-    cfg = 'buildout_post.cfg'
+    cfg = 'buildout.cfg'
     env = dict([(k,os.environ[k]) for k in os.environ  # avoid PYTHONPATH
                 if not k.startswith('PYTHON')])        # for installation
 
