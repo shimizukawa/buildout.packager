@@ -124,10 +124,12 @@ class bout_src(Command):
         options = dict(self.distribution.command_options['bout_config'])
         cwd = os.path.abspath(os.getcwd()) #FIXME: setup.py実行ディレクトリの取得をしたい
         build_dir = os.path.join(cwd, self.build_base, 'buildout-' + get_postfix_name(self.python))
+        repos_dir = os.path.join(cwd, self.build_base, 'buildout-repos')
         pkg_base_dir = os.path.join(os.path.dirname(__file__), 'packages')
         pkg_dir = os.path.join(build_dir, 'packages')
         cache_dir = build_dir
         eggs_dir = os.path.join(cache_dir, 'eggs')
+        eggs_dist_dir = os.path.join(cache_dir, 'eggs', 'dist')
         build_python_dir = os.path.join(build_dir, 'python')
         buildout_cmd = os.path.join('bin','buildout')
 
@@ -152,12 +154,20 @@ class bout_src(Command):
             if os.path.isfile(src):
                 shutil.copy(src, os.path.join(pkg_dir, name))
 
+        vcs_packages = options['vcs_packages'][1]
+        kw = dict(
+            target_egg=meta.name,
+            buildout_option=textwrap.dedent(options['buildout_option'][1]),
+            vcs_extend_develop='\n'.join('    '+x for x in vcs_packages),
+            repos_dir=repos_dir,
+        )
+
         for name in ('buildout_pre.cfg', 'buildout.cfg'):
             template(
                     os.path.join(pkg_base_dir, name),
                     os.path.join(build_dir, name),
-                    target_egg=meta.name,
-                    buildout_option=textwrap.dedent(options['buildout_option'][1]))
+                    **kw
+                    )
 
         if not os.path.exists(eggs_dir):
             os.makedirs(eggs_dir)
@@ -168,16 +178,27 @@ class bout_src(Command):
         if build_python_dir and not os.path.exists(executable):
             copy_python(os.path.dirname(self.python), build_python_dir)
 
-        # bootstrap and build
+        # bootstrap
         log.info("bootstrap and build environment.")
         cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']
         popen(cmd)
+
+        # build target egg
         cmd = [buildout_cmd, 'setup', cwd, 'bdist_egg', '-d', eggs_dir]
         popen(cmd)
+
+        # buildout setup
         cmd = [buildout_cmd, '-UNc', 'buildout_pre.cfg']
         if self.verbose:
             cmd.append('-%s' % ('v' * self.verbose))
         popen(cmd)
+
+        # build vcs packages
+        for url in vcs_packages:
+            dummy, pkg = url.split('#egg=')
+            path = os.path.join(repos_dir, pkg)
+            cmd = [buildout_cmd, 'setup', path, 'bdist_egg', '-d', eggs_dist_dir]
+            popen(cmd)
 
         # finally
         os.chdir(cwd)

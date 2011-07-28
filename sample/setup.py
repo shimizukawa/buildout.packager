@@ -37,13 +37,17 @@ setup(
     options = {
         'bout_config': {
             'buildout_option': """\
+                dependent-scripts = true
+                interpreter = python
                 initialization =
                     import sys, types
                     sys.modules['PIL'] = types.ModuleType('PIL')
                     sys.modules['PIL'].Image = __import__('Image')
-                interpreter = python
             """,
             'package_name': 'Sphinx',
+            'vcs_packages': [
+                'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.7-ja#egg=sphinx',
+            ],
         },
     },
 )
