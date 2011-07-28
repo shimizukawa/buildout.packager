@@ -10,4 +10,5 @@ dist
 eggs
 parts
 src/.*.egg-info
+sample/.*.egg-info
 sample/build
