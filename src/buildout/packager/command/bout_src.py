@@ -167,6 +167,7 @@ class bout_src(Command):
         kw = dict(
             target_egg=meta.name,
             buildout_option=textwrap.dedent(options['buildout_option'][1]),
+            buildout_locallibs='\n'.join(options['buildout_locallibs'][1]),
             vcs_extend_develop='\n'.join('    '+x for x in vcs_packages),
             repos_dir=repos_dir,
         )

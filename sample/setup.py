@@ -13,6 +13,7 @@ setup(
     #namespace_packages=[${repr($namespace_package)}],
     include_package_data=True,
     install_requires = [
+        'Pillow',
         'sphinx',
         'actdiag',
         'blockdiag',
@@ -26,7 +27,6 @@ setup(
         'blockdiagcontrib-qb',
         'blockdiagcontrib-class',
         'pypng',
-        'PIL',
         'sphinxjp.themecore',
         'sphinxjp.themes.biz_blue_simple',
         'sphinxjp.themes.bizstyle',
@@ -34,20 +34,22 @@ setup(
         'sphinxjp.themes.s6',
         'sphinxjp.themes.sphinxjp',
     ],
+    dependency_links = [
+        "https://bitbucket.org/shimizukawa/pillow/downloads"
+    ],
     options = {
         'bout_config': {
             'buildout_option': """\
                 dependent-scripts = true
                 interpreter = python
-                initialization =
-                    import sys, types
-                    sys.modules['PIL'] = types.ModuleType('PIL')
-                    sys.modules['PIL'].Image = __import__('Image')
             """,
             'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
             'vcs_packages': [
                 'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.7-ja#egg=sphinx',
+            ],
+            'buildout_locallibs': [
+                'Pillow = PIL==1.1.7',
             ],
         },
     },
