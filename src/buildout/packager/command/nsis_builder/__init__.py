@@ -100,7 +100,7 @@ Section "registry"
 
     # registry for windows uninstall menu
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "DisplayName" "%(self_name)s"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "UninstallString" \'"$INSTDIR\uninstall.exe"\'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "UninstallString" "$INSTDIR\uninstall.exe"
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "NoModify" 1
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(self_name)s" "NoRepair" 1
     WriteUninstaller "uninstall.exe"
