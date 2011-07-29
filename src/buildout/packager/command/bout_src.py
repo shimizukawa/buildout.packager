@@ -6,8 +6,10 @@ import shutil
 import textwrap
 from distutils.core import Command
 from distutils import log
-from utils import popen, resolve_interpreter, get_postfix_name
 
+import setuptools.archive_util
+
+from utils import popen, system, resolve_interpreter, get_postfix_name
 import py2exe_support
 import pyinstaller_support
 
@@ -204,8 +206,21 @@ class bout_src(Command):
         for url in vcs_packages:
             dummy, pkg = url.split('#egg=')
             path = os.path.join(repos_dir, pkg)
+
+            # make egg file
             cmd = [buildout_cmd, 'setup', path, 'bdist_egg', '-d', eggs_dist_dir]
             popen(cmd)
+
+            # get package fullname and extract egg
+            cmd = [buildout_cmd, '-q', 'setup', path, '--fullname']
+            fullname = system(cmd).strip()
+            filename = pickup_distributed_archive(fullname, eggs_dist_dir)
+            # dist_file is FILE always.
+            dist_file = os.path.join(eggs_dist_dir, filename)
+            dest_dir = os.path.join(eggs_dir, filename)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+            setuptools.archive_util.unpack_archive(dist_file, dest_dir)
 
         # finally
         os.chdir(cwd)

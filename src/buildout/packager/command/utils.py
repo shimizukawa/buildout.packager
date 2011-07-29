@@ -5,7 +5,8 @@ import subprocess
 from distutils import log
 
 __all__ = [
-    'popen', 'resolve_interpreter', 'get_postfix_name', 'get_python_version',
+    'popen', 'system',
+    'resolve_interpreter', 'get_postfix_name', 'get_python_version',
     'norm', 'to_filename',
     ]
 
@@ -27,6 +28,20 @@ def popen(cmd):
 
     proc.wait()
     return proc.returncode
+
+
+def system(cmd):
+    proc = subprocess.Popen(
+            cmd,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE
+        )
+    outdata, errdata = proc.communicate()
+
+    for line in errdata.splitlines():
+        log.error(line.rstrip())
+
+    return outdata
 
 
 # resolve_interpreter function was copied from virtualenv.py and modified
