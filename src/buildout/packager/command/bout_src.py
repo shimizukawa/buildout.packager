@@ -74,6 +74,13 @@ def template(src, dst, **kw):
     f.close()
 
 
+def pickup_distributed_archive(fullname, dist_dir):
+    for name in os.listdir(dist_dir):
+        if name.lower().startswith(fullname.lower()):
+            return name  #FIXME: find best_match package
+    return None  # no package found
+
+
 class bout_src(Command):
     description = "create a buildout installer"
 

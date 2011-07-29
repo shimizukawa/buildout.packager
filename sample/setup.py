@@ -2,8 +2,8 @@ from setuptools import setup
 from datetime import datetime
 
 setup(
-    name='SphinxInstaller',
-    version=datetime.now().strftime('1.0.7.alpha%Y%m%d'),
+    name='SphinxInstaller',  # Package Name need unique name
+    version=datetime.now().strftime('1.0.7alpha-%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
@@ -44,7 +44,8 @@ setup(
                     sys.modules['PIL'] = types.ModuleType('PIL')
                     sys.modules['PIL'].Image = __import__('Image')
             """,
-            'package_name': 'Sphinx',
+            'installer_name': 'Sphinx',  # default: Package Name
+            'application_name': 'Sphinx',  # default: Package Name
             'vcs_packages': [
                 'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.7-ja#egg=sphinx',
             ],

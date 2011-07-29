@@ -78,18 +78,26 @@ class bout_wininst(bout_dist):
         postfix_name = get_postfix_name(self.python)
         build_dir = os.path.join(self.build_base, 'buildout-' + postfix_name)
         meta = self.distribution.metadata
+        options = dict(self.distribution.command_options['bout_config'])
+        application_name = options.get('application_name',
+                                       ('default', meta.name))[1]
+        installer_name = options.get('installer_name',
+                                     ('default', meta.name))[1]
 
         #### ä¬ã´ï ÇÃmake_packageÇåƒÇ—èoÇ∑
         compiler = self.compiler + '_builder'
         builder = __import__(compiler, globals(), locals())
-        builder.builder(meta.name, meta.name, meta.name,
-                        build_dir,
-                        self.dist_dir,
-                        meta.version,
-                        meta.author,
-                        meta.url,
-                        postfix_name,
-                        self.verbose)
+        builder.builder(
+                application_name,  # Application Name
+                installer_name,    # Installer Name
+                application_name,  # Install Default Target Dir
+                build_dir,
+                self.dist_dir,
+                meta.version,
+                meta.author,
+                meta.url,
+                postfix_name,
+                self.verbose)
 
 
 class bout_zip(bout_dist):
