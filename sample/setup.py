@@ -47,6 +47,10 @@ setup(
             'application_name': 'Sphinx',  # default: Package Name
             'vcs_packages': [
                 'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.7-ja#egg=sphinx',
+                'hg+http://bitbucket.org/tk0miya/blockdiag/@tip#egg=blockdiag',
+                'hg+http://bitbucket.org/tk0miya/nwdiag/@tip#egg=nwdiag',
+                'hg+http://bitbucket.org/tk0miya/seqdiag/@tip#egg=seqkdiag',
+                'hg+http://bitbucket.org/tk0miya/actdiag/@tip#egg=actdiag',
             ],
             'buildout_locallibs': [
                 'Pillow = PIL==1.1.7',
