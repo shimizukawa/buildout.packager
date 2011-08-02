@@ -48,9 +48,11 @@ Root: HKLM; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\parts";
+Type: filesandordirs; Name: "{app}\eggs";
 Type: filesandordirs; Name: "{app}\bin";
 Type: filesandordirs; Name: "{app}\develop-eggs";
 Type: filesandordirs; Name: "{app}\.installed.cfg";
+Type: filesandordirs; Name: "{app}\versions.txt";
 
 
 [Code]

@@ -127,7 +127,7 @@ Section "Uninstall"
     ;;  DeleteRegKey HKLM SOFTWARE\NSIS_Example2
 
     RMDir /r $INSTDIR\bin
-    RMDir /r $INSTDIR\cache
+    RMDir /r $INSTDIR\eggs
     RMDir /r $INSTDIR\develop-eggs
     RMDir /r $INSTDIR\packages
     RMDir /r $INSTDIR\parts
@@ -137,6 +137,7 @@ Section "Uninstall"
     Delete $INSTDIR\buildout.cfg
     Delete $INSTDIR\buildout_post.cfg
     Delete $INSTDIR\uninstall.exe
+    Delete $INSTDIR\versions.txt
 
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
 
