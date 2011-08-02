@@ -7,10 +7,6 @@ setup(
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
-    #packages='.',
-    #package_dir={'': '.'},
-    #package_data={'': ['buildout.cfg']},
-    #namespace_packages=[${repr($namespace_package)}],
     include_package_data=True,
     install_requires = [
         'Pillow',
