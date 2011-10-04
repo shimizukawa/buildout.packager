@@ -42,7 +42,7 @@ setup(
             'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
             'vcs_packages': [
-                'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.7-ja#egg=sphinx',
+                'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.8-ja#egg=sphinx',
             ],
             'buildout_locallibs': [
                 'Pillow = PIL==1.1.7',
