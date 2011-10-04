@@ -3,7 +3,7 @@ from datetime import datetime
 
 setup(
     name='SphinxInstaller',  # Package Name need unique name
-    version=datetime.now().strftime('1.0.7alpha-%Y%m%d'),
+    version=datetime.now().strftime('1.0.8-ja-%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
