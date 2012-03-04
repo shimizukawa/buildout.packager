@@ -198,7 +198,7 @@ class bout_src(Command):
         popen(cmd)
 
         # buildout setup
-        cmd = [buildout_cmd, '-UNc', 'buildout_pre.cfg']
+        cmd = [buildout_cmd, '-Uc', 'buildout_pre.cfg']
         if self.verbose:
             cmd.append('-%s' % ('v' * self.verbose))
         popen(cmd)
