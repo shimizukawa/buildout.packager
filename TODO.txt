@@ -3,9 +3,11 @@ Todos
 
 for Windows
 ~~~~~~~~~~~
-* add `bin` directory to PATH environment (innosetup)
+* search and copy `python27.dll` if python installed by `any one` instead of `only you`.
+* handle "can't invoke setup.bat" at after install (nsis)
 * display some description fo installer pages (nsis)
 * display application icon (innosetup / nsis)
+* add `bin` directory to PATH environment (innosetup)
 
 
 for Unix
