@@ -3,8 +3,7 @@ from datetime import datetime
 
 setup(
     name='SphinxInstaller',  # Package Name need unique name
-    #version=datetime.now().strftime('1.0.8-ja-%Y%m%d'),
-    version=datetime.now().strftime('1.1.2-%Y%m%d'),
+    version=datetime.now().strftime('1.0.8-ja-%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
@@ -46,8 +45,7 @@ setup(
             'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
             'vcs_packages': [
-            #    'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.8-ja#egg=sphinx',
-            #    #'https://bitbucket.org/uchida/sphinx',
+                'hg+http://bitbucket.org/shimizukawa/sphinx/@1.0.8-ja#egg=sphinx',
             ],
             'buildout_locallibs': [
                 'Pillow = PIL==1.1.7',
