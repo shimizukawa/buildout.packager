@@ -55,6 +55,22 @@ Page instfiles
 !insertmacro MUI_LANGUAGE "SimpChinese"
 !insertmacro MUI_LANGUAGE "Slovak"
 
+; Installer Functions
+Function .onInit
+
+  !insertmacro MUI_LANGDLL_DISPLAY
+
+FunctionEnd
+
+
+; Uninstaller Functions
+Function un.onInit
+
+  !insertmacro MUI_UNGETLANGUAGE
+
+FunctionEnd
+
+
 Section "files"
 
     %(data_files)s
