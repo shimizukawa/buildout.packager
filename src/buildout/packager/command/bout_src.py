@@ -182,12 +182,11 @@ class bout_src(Command):
             repos_dir=repos_dir,
         )
 
-        for name in ('buildout_pre.cfg', 'buildout.cfg'):
-            template(
-                    os.path.join(pkg_base_dir, name),
-                    os.path.join(build_dir, name),
-                    **kw
-                    )
+        template(
+                os.path.join(pkg_base_dir, 'buildout_pre.cfg'),
+                os.path.join(build_dir, 'buildout_pre.cfg'),
+                **kw
+                )
 
         if not os.path.exists(eggs_dir):
             os.makedirs(eggs_dir)
@@ -200,18 +199,34 @@ class bout_src(Command):
 
         # bootstrap
         log.info("bootstrap and build environment.")
-        cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap2.py'), '-d', 'init']
-        popen(cmd)
+        if os.path.exists(os.path.join(build_dir, 'buildout.cfg')):
+            # if already exist 'buildout.cfg' bootstrap.py cause error.
+            os.remove(os.path.join(build_dir, 'buildout.cfg'))
+        cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap.py'),
+               '-d',
+               '--eggs=' + eggs_dir,
+               'init'
+               ]
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
 
         # build target egg
-        cmd = [buildout_cmd, 'setup', cwd, 'bdist_egg', '-d', eggs_dir]
-        popen(cmd)
+        cmd = [buildout_cmd,
+               '-c', 'buildout_pre.cfg',
+               'setup', cwd, 'bdist_egg', '-d', eggs_dir,
+               ]
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
 
         # buildout setup
         cmd = [buildout_cmd, '-Uc', 'buildout_pre.cfg']
         if self.verbose:
             cmd.append('-%s' % ('v' * self.verbose))
-        popen(cmd)
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
 
         # build vcs packages
         for url in vcs_packages:
@@ -219,11 +234,19 @@ class bout_src(Command):
             path = os.path.join(repos_dir, pkg)
 
             # make egg file
-            cmd = [buildout_cmd, 'setup', path, 'bdist_egg', '-d', eggs_dist_dir]
-            popen(cmd)
+            cmd = [buildout_cmd,
+                   '-c', 'buildout_pre.cfg',
+                   'setup', path, 'bdist_egg', '-d', eggs_dist_dir
+                   ]
+            errcode = popen(cmd, self.verbose)
+            if errcode:
+                raise RuntimeError('command return error code:', errcode, cmd)
 
             # get package fullname and extract egg
-            cmd = [buildout_cmd, '-q', 'setup', path, '--fullname']
+            cmd = [buildout_cmd,
+                   '-c', 'buildout_pre.cfg',
+                   '-q', 'setup', path, '--fullname'
+                   ]
             fullname = system(cmd).strip()
             filename = pickup_distributed_archive(fullname, eggs_dist_dir)
             # dist_file is FILE always.
@@ -245,6 +268,13 @@ class bout_src(Command):
                     shutil.rmtree(path)
                 else:
                     os.remove(path)
+
+        # buildout.cfg for installer
+        template(
+                os.path.join(pkg_base_dir, 'buildout.cfg'),
+                os.path.join(build_dir, 'buildout.cfg'),
+                **kw
+                )
 
         # copy depends
         # TODO: copy depends when python-interpreter was not copied

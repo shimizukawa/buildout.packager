@@ -11,7 +11,10 @@ __all__ = [
     ]
 
 
-def popen(cmd):
+def popen(cmd, verbose=0):
+    if verbose:
+        log.info('execute: %r' % cmd)
+
     proc = subprocess.Popen(
             cmd,
             stdin  = subprocess.PIPE,
@@ -27,6 +30,9 @@ def popen(cmd):
         log.error(line.rstrip())
 
     proc.wait()
+    if verbose:
+        log.info('return code: %r' % proc.returncode)
+        log.info('executed: %r' % cmd)
     return proc.returncode
 
 
