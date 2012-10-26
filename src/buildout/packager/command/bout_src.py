@@ -4,6 +4,7 @@ import sys
 import string
 import shutil
 import textwrap
+import hashlib
 from distutils.core import Command
 from distutils import log
 
@@ -63,7 +64,16 @@ def copy_depends(build_dir, dest_dir):
         if path.lower().startswith(build_dir.lower()):
             continue
         log.info("copying dependency file: %s" % name)
-        shutil.copy2(path, os.path.join(dest_dir, name))
+        dist_path = os.path.join(dest_dir, name)
+        if os.path.exists(dist_path):
+            if hashlib.md5(open(path, 'rb').read()).digest() != \
+               hashlib.md5(open(dist_path, 'rb').read()).digest():
+                shutil.remove(dist_path)
+                shutil.copy2(path, dist_path)
+            else:
+                log.info("%s is not changed. skipped." % name)
+        else:
+            shutil.copy2(path, dist_path)
 
 
 def template(src, dst, **kw):
