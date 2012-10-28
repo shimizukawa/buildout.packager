@@ -78,7 +78,7 @@ class bout_wininst(bout_dist):
         postfix_name = get_postfix_name(self.python)
         build_dir = os.path.join(self.build_base, 'buildout-' + postfix_name)
         meta = self.distribution.metadata
-        options = dict(self.distribution.command_options['bout_config'])
+        options = dict(self.distribution.command_options.get('bout_config', {}))
         application_name = options.get('application_name',
                                        ('default', meta.name))[1]
         installer_name = options.get('installer_name',

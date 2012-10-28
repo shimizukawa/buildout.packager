@@ -140,7 +140,7 @@ class bout_src(Command):
 
     def run(self):
         meta = self.distribution.metadata
-        options = dict(self.distribution.command_options['bout_config'])
+        options = dict(self.distribution.command_options.get('bout_config', {}))
         cwd = os.path.abspath(os.getcwd()) #FIXME: setup.py実行ディレクトリの取得をしたい
         build_dir = os.path.join(cwd, self.build_base, 'buildout-' + get_postfix_name(self.python))
         repos_dir = os.path.join(cwd, self.build_base, 'buildout-repos')
@@ -173,11 +173,25 @@ class bout_src(Command):
             if os.path.isfile(src):
                 shutil.copy(src, os.path.join(pkg_dir, name))
 
-        vcs_packages = options['vcs_packages'][1]
+        if 'vcs_packages' in options:
+            vcs_packages = options['vcs_packages'][1]
+        else:
+            vcs_packages = []
+
+        if 'buildout_option' in options:
+            buildout_option = textwrap.dedent(options['buildout_option'][1])
+        else:
+            buildout_option = ''
+
+        if 'buildout_locallibs' in options:
+            buildout_locallibs = options['buildout_locallibs'][1]
+        else:
+            buildout_locallibs = []
+
         kw = dict(
             target_egg=meta.name,
-            buildout_option=textwrap.dedent(options['buildout_option'][1]),
-            buildout_locallibs='\n'.join(options['buildout_locallibs'][1]),
+            buildout_option=buildout_option,
+            buildout_locallibs='\n'.join(buildout_locallibs),
             vcs_extend_develop='\n'.join('    '+x for x in vcs_packages),
             repos_dir=repos_dir,
         )
