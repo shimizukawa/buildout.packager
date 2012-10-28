@@ -98,7 +98,7 @@ SectionEnd
 
 Section "registry"
 
-    WriteRegStr HKLM SOFTWARE\%(self_author_name)s\%(self_name)s "Install_Dir" "$INSTDIR"
+    WriteRegStr HKLM "SOFTWARE\%(self_author_name)s\%(self_name)s" "Install_Dir" "$INSTDIR"
 
     ;InstallDirRegKey HKLM "Software\%(self_author_name)s\%(self_name)s" "Install_Dir"
     ;Root: HKCU; Subkey: "Software\%(self_author_name)s\%(self_name)s\%(self_version)s"; Flags: uninsdeletekey
