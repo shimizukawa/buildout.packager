@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #from distutils.core import setup
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 version = '0.0.1'
@@ -29,8 +29,9 @@ setup(
      author='Takayuki SHIMIZUKAWA',
      author_email='shimizukawa at gmail.com',
      url='http://bitbucket.org/shimizukawa/buildout.packager/',
-     namespace_packages=['buildout'],
      license='Apache License 2.0',
+     namespace_packages=['buildout'],
+     packages=find_packages('src'),
      package_dir={'': 'src'},
      install_requires=[
          'setuptools',
