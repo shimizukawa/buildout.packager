@@ -33,6 +33,9 @@ setup(
      namespace_packages=['buildout'],
      packages=find_packages('src'),
      package_dir={'': 'src'},
+     dependency_links=[
+         'http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/',
+     ],
      install_requires=[
          'setuptools',
          'py2exe',

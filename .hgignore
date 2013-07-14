@@ -5,6 +5,7 @@
 .swp
 bin
 _build/
+build/
 develop-eggs
 dist
 eggs

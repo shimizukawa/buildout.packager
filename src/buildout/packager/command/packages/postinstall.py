@@ -11,20 +11,15 @@ def main(app_dir):
     cfg = 'buildout.cfg'
     bootstrap = os.path.join(pkg_dir, 'bootstrap-offline.py')
     bootstrap_opts = [
-            '-d',  #use distribute
-            '-c', cfg, #use config file to using offline-cache
-            '--eggs', 'eggs', #use chached packages
-                #use downloaded distribute_setup.py
-            '--setup-source', os.path.join(pkg_dir, 'distribute_setup.py'),
-                #use downloaded zc.buildout egg
-            '--version', '1.6.3',
+            '-c', cfg,  #use config file to using offline-cache
+            '--version', '2.2.0',  # no check with internet
             ]
     env = dict([(k,os.environ[k]) for k in os.environ  # avoid PYTHONPATH
                 if not k.startswith('PYTHON')])        # for installation
 
     os.chdir(app_dir)
     subprocess.check_call([sys.executable, bootstrap] + bootstrap_opts, env=env)
-    subprocess.check_call([buildout, '-UNovc', cfg], env=env)
+    subprocess.check_call([buildout, '-UNvc', cfg], env=env)
     os.chdir(cwd)
 
 

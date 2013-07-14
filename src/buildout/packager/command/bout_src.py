@@ -216,9 +216,7 @@ class bout_src(Command):
         if os.path.exists(os.path.join(build_dir, 'buildout.cfg')):
             # if already exist 'buildout.cfg' bootstrap.py cause error.
             os.remove(os.path.join(build_dir, 'buildout.cfg'))
-        cmd = [executable, '-S', os.path.join(pkg_dir,'bootstrap.py'),
-               '-d',
-               '--eggs=' + eggs_dir,
+        cmd = [executable, os.path.join(pkg_dir,'bootstrap.py'),
                'init'
                ]
         errcode = popen(cmd, self.verbose)
