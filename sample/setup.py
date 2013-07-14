@@ -2,15 +2,15 @@ from setuptools import setup
 from datetime import datetime
 
 setup(
-    name='SphinxInstaller-ja',  # Package Name need unique name
-    version=datetime.now().strftime('1.1.3.%Y%m%d'),
+    name='SphinxInstaller',  # Package Name need unique name
+    version=datetime.now().strftime('1.2b1.%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
     include_package_data=True,
     install_requires = [
         'Pillow',
-        'sphinx',
+        'sphinx==1.2b1',
         'actdiag',
         'blockdiag',
         'nwdiag',
@@ -41,9 +41,9 @@ setup(
             """,
             #'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
-            'vcs_packages': [
-                'hg+http://bitbucket.org/shimizukawa/sphinx/@1.1.3-ja#egg=sphinx',
-            ],
+            #'vcs_packages': [
+            #    'hg+http://bitbucket.org/birkenfeld/sphinx#egg=sphinx',
+            #],
             'buildout_locallibs': [
                 'Pillow = PIL==1.1.7',
             ],
