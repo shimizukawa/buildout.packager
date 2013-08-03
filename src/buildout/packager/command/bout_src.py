@@ -5,6 +5,7 @@ import string
 import shutil
 import textwrap
 import hashlib
+import tempfile
 from distutils.core import Command
 from distutils import log
 
@@ -211,21 +212,36 @@ class bout_src(Command):
         if build_python_dir and not os.path.exists(executable):
             copy_python(os.path.dirname(self.python), build_python_dir)
 
+        # ez_setup
+        log.info("install setuptools.")
+        cmd = [executable, os.path.join(pkg_dir,'ez_setup.py')]
+        errcode = popen(cmd, self.verbose, cwd=tempfile.gettempdir())
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
+
+
+        # zc.buildout
+        log.info("install zc.buildout.")
+        cmd = [executable, '-m', 'easy_install', 'zc.buildout']
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
+
         # bootstrap
         log.info("bootstrap and build environment.")
         if os.path.exists(os.path.join(build_dir, 'buildout.cfg')):
             # if already exist 'buildout.cfg' bootstrap.py cause error.
             os.remove(os.path.join(build_dir, 'buildout.cfg'))
-        cmd = [executable, os.path.join(pkg_dir,'bootstrap.py'),
-               'init'
-               ]
+        cmd = [executable,
+               '-c', 'from zc.buildout.buildout import main; main()',
+               '-U', 'init']
         errcode = popen(cmd, self.verbose)
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
         # build target egg
         cmd = [buildout_cmd,
-               '-c', 'buildout_pre.cfg',
+               '-Uc', 'buildout_pre.cfg',
                'setup', cwd, 'bdist_egg', '-d', eggs_dir,
                ]
         errcode = popen(cmd, self.verbose)

@@ -9,7 +9,7 @@ def main(app_dir):
     pkg_dir = os.path.join(app_dir, 'packages')
     buildout = os.path.join('bin', 'buildout')
     cfg = 'buildout.cfg'
-    bootstrap = os.path.join(pkg_dir, 'bootstrap-offline.py')
+    bootstrap = os.path.join(pkg_dir, 'bootstrap.py')
     bootstrap_opts = [
             '-c', cfg,  #use config file to using offline-cache
             '--version', '2.2.0',  # no check with internet

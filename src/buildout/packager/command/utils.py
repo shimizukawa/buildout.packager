@@ -11,7 +11,7 @@ __all__ = [
     ]
 
 
-def popen(cmd, verbose=0):
+def popen(cmd, verbose=0, **kwargs):
     if verbose:
         log.info('execute: %r' % cmd)
 
@@ -19,7 +19,8 @@ def popen(cmd, verbose=0):
             cmd,
             stdin  = subprocess.PIPE,
             stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE
+            stderr = subprocess.PIPE,
+            **kwargs
         )
 
     for line in iter(proc.stdout.readline, ''):
