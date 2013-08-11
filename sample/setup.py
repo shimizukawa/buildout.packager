@@ -36,11 +36,14 @@ setup(
     options = {
         'bout_config': {
             'buildout_option': """\
-                dependent-scripts = true
-                interpreter = python
+                #dependent-scripts = true
+                interpreter = sphinx-py
             """,
             #'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
+            'target_eggs': [
+                'Sphinx'  # for generate script
+            ],
             #'vcs_packages': [
             #    'hg+http://bitbucket.org/birkenfeld/sphinx#egg=sphinx',
             #],
