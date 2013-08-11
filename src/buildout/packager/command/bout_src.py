@@ -179,6 +179,9 @@ class bout_src(Command):
         else:
             vcs_packages = []
 
+        target_eggs = options.get('target_eggs', ['', []])[1]
+        target_eggs.insert(0, meta.name)
+
         if 'buildout_option' in options:
             buildout_option = textwrap.dedent(options['buildout_option'][1])
         else:
@@ -190,7 +193,7 @@ class bout_src(Command):
             buildout_locallibs = []
 
         kw = dict(
-            target_egg=meta.name,
+            target_eggs='\n'.join('    '+x for x in target_eggs),
             buildout_option=buildout_option,
             buildout_locallibs='\n'.join(buildout_locallibs),
             vcs_extend_develop='\n'.join('    '+x for x in vcs_packages),
