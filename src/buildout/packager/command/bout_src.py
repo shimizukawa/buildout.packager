@@ -218,7 +218,8 @@ class bout_src(Command):
         # ez_setup
         log.info("install setuptools.")
         cmd = [executable, os.path.join(pkg_dir,'ez_setup.py')]
-        errcode = popen(cmd, self.verbose, cwd=tempfile.gettempdir())
+        # use eggs_dir to store setuptools src for offline installation.
+        errcode = popen(cmd, self.verbose, cwd=eggs_dir)
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
