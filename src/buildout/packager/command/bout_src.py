@@ -223,8 +223,21 @@ class bout_src(Command):
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
+        # pip
+        log.info("install pip.")
+        cmd = [executable, '-m', 'easy_install', 'pip']
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
 
-        # zc.buildout
+        # download zc.buildout
+        log.info("download zc.buildout.")
+        cmd = [executable, '-m', 'pip', 'install', '-d', '.', 'zc.buildout']
+        errcode = popen(cmd, self.verbose, cwd=eggs_dir)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
+
+        # install zc.buildout
         log.info("install zc.buildout.")
         cmd = [executable, '-m', 'easy_install', 'zc.buildout']
         errcode = popen(cmd, self.verbose)
@@ -307,6 +320,25 @@ class bout_src(Command):
                 os.path.join(build_dir, 'buildout.cfg'),
                 **kw
                 )
+
+        # remove computer depends site-packages files
+        log.info("remove computer depends site-packages files.")
+        cmd = [
+            executable, '-c',
+            "from os import mkdir; "
+            "from os.path import join; "
+            "from sysconfig import get_path; "
+            "from shutil import rmtree; "
+            "f = join(get_path('purelib'), 'README.txt'); "
+            "d = open(f, 'r').read(); "
+            "rmtree(get_path('purelib'), ignore_errors=False); "
+            "mkdir(get_path('purelib')); "
+            "open(f, 'w').write(d); "
+            "rmtree(get_path('scripts'), ignore_errors=False); "
+        ]
+        errcode = popen(cmd, self.verbose)
+        if errcode:
+            raise RuntimeError('command return error code:', errcode, cmd)
 
         # copy depends
         # TODO: copy depends when python-interpreter was not copied

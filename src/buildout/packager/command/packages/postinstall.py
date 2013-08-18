@@ -12,22 +12,32 @@ def main(app_dir):
     env = dict([(k,os.environ[k]) for k in os.environ  # avoid PYTHONPATH
                 if not k.startswith('PYTHON')])        # for installation
 
-    setuptools_src = sorted(glob(os.path.join(eggs_dir, 'setuptools-*gz')))[-1]
-    easy_install = ['easy_install', '-U', setuptools_src]
-
-    buildout = os.path.join('bin', 'buildout')
-    cfg = 'buildout.cfg'
-    bootstrap = os.path.join(pkg_dir, 'bootstrap.py')
-    bootstrap_opts = [
-            '-c', cfg,  #use config file to using offline-cache
-            '--version', '2.2.0',  # no check with internet
+    # ez_setup
+    setuptools_src = sorted(glob(os.path.join(eggs_dir, 'setuptools-*gz')))[0]
+    ez_setup = [
+            sys.executable, '-c',
+            "import ez_setup; "
+            "ez_setup._install('%(setuptools_src)s'); "
+            % locals()
             ]
+    subprocess.check_call(ez_setup, cwd=pkg_dir, env=env)
 
-    os.chdir(app_dir)
-    subprocess.check_call([sys.executable, '-m'] + easy_install, env=env)
-    subprocess.check_call([sys.executable, bootstrap] + bootstrap_opts, env=env)
-    subprocess.check_call([buildout, '-UNvc', cfg], env=env)
-    os.chdir(cwd)
+    # bootstrap
+    buildouts_src = sorted(glob(os.path.join(eggs_dir, 'zc.buildout-*gz')))[-1]
+    cfg = 'buildout.cfg'
+    bootstrap_cmd = [
+            sys.executable, '-m', 'easy_install', buildouts_src,
+            ]
+    subprocess.check_call(bootstrap_cmd, cwd=app_dir, env=env)
+
+    # buildout
+    buildout_cmd = [
+            sys.executable, '-c',
+            "from zc.buildout.buildout import main; "
+            "main(['-Uvc', '%(cfg)s']); "
+            % locals()
+            ]
+    subprocess.check_call(buildout_cmd, cwd=app_dir, env=env)
 
 
 if __name__ == '__main__':
