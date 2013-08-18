@@ -28,7 +28,6 @@ setup(
         'sphinxjp.themes.dotted',
         'sphinxjp.themes.htmlslide',
         'sphinxjp.themes.s6',
-        'sphinxjp.themes.solarized',
         'sphinxjp.themes.sphinxjp',
         'sphinxjp.themes.trstyle',
         'sphinxjp.themes.impressjs',
