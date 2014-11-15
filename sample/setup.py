@@ -3,14 +3,14 @@ from datetime import datetime
 
 setup(
     name='SphinxInstaller',  # Package Name need unique name
-    version=datetime.now().strftime('1.2b1.%Y%m%d'),
+    version=datetime.now().strftime('1.2.3.%Y%m%d'),
     author='Sphinx-users.jp',
     url='http://sphinx-users.jp',
     license='',
     include_package_data=True,
     install_requires = [
         'Pillow',
-        'sphinx==1.2b1',
+        'sphinx==1.2.3',
         'actdiag',
         'blockdiag',
         'nwdiag',
@@ -23,7 +23,6 @@ setup(
         'blockdiagcontrib-qb',
         'blockdiagcontrib-class',
         'pypng',
-        'sphinxjp.themecore',
         'sphinxjp.themes.bizstyle',
         'sphinxjp.themes.dotted',
         'sphinxjp.themes.htmlslide',
