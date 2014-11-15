@@ -29,6 +29,8 @@ def copy_python(src_python_dir, build_python_dir):
         return
 
     log.info("Copying python files.")
+    log.debug("  from: %r", src_python_dir)
+    log.debug("  to  : %r", build_python_dir)
 
     for name in ('libs', 'DLLs', 'include'):
         shutil.copytree(
@@ -69,8 +71,10 @@ def copy_depends(build_dir, dest_dir):
         if os.path.exists(dist_path):
             if hashlib.md5(open(path, 'rb').read()).digest() != \
                hashlib.md5(open(dist_path, 'rb').read()).digest():
-                shutil.remove(dist_path)
+                os.remove(dist_path)
                 shutil.copy2(path, dist_path)
+                log.debug(" from: %r", path)
+                log.debug(" to  : %r", dist_path)
             else:
                 log.info("%s is not changed. skipped." % name)
         else:
@@ -155,7 +159,7 @@ class bout_src(Command):
 
         if self.include_python:
             executable = os.path.join(build_python_dir, os.path.basename(self.python))
-            log.info("bdist_src including Python Interpreter at '%s'", executable)
+            log.info("bdist_src including Python Interpreter at '%s'", self.python)
         else:
             if os.path.exists(build_python_dir):
                 # TODO: implement bout_clean command and move this block.
@@ -230,16 +234,20 @@ class bout_src(Command):
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
+        # zc.buildout = 2.2.1
+        # because 2.2.5 require newer setuptools and conflict with 0.9.8
+        zc_buildout = 'zc.buildout==2.2.1'
+
         # download zc.buildout
         log.info("download zc.buildout.")
-        cmd = [executable, '-m', 'pip', 'install', '-d', '.', 'zc.buildout']
+        cmd = [executable, '-m', 'pip', 'install', '-d', '.', zc_buildout]
         errcode = popen(cmd, self.verbose, cwd=eggs_dir)
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
         # install zc.buildout
         log.info("install zc.buildout.")
-        cmd = [executable, '-m', 'easy_install', 'zc.buildout']
+        cmd = [executable, '-m', 'easy_install', zc_buildout]
         errcode = popen(cmd, self.verbose)
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
