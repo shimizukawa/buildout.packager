@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-
 import os
 import sys
 import subprocess
@@ -274,7 +272,7 @@ class NSISScript(object):
 
         else:
             for line in proc.stdout:
-                print(line.decode(), end='')
+                log.debug(line.decode().strip())
 
         proc.wait()
         return proc.returncode == 0
