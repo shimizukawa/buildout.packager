@@ -40,14 +40,11 @@ setup(
             #'installer_name': 'Sphinx',  # default: Package Name
             'application_name': 'Sphinx',  # default: Package Name
             'target_eggs': [
-                'Sphinx'  # for generate script
+                'Sphinx==1.2.3'  # for generate script
             ],
             #'vcs_packages': [
             #    'hg+http://bitbucket.org/birkenfeld/sphinx#egg=sphinx',
             #],
-            'buildout_locallibs': [
-                'Pillow = PIL==1.1.7',
-            ],
         },
     },
 )
