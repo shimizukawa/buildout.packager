@@ -84,7 +84,7 @@ class bout_wininst(bout_dist):
         installer_name = options.get('installer_name',
                                      ('default', meta.name))[1]
 
-        #### ŠÂ‹«•Ê‚Ìmake_package‚ğŒÄ‚Ño‚·
+        #### ç’°å¢ƒåˆ¥ã®make_packageã‚’å‘¼ã³å‡ºã™
         compiler = self.compiler + '_builder'
         builder = __import__(compiler, globals(), locals())
         builder.builder(
