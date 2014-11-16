@@ -12,7 +12,7 @@ along with all dependencies, which can be used without network access.
 Requirements
 ------------
 
-* Python 2.5 or later
+* Python 2.6, 2.7, 3.3, 3.4
 
 * `InnoSetup <http://www.innosetup.com/>`_ for Windows installer
 
@@ -20,9 +20,7 @@ Requirements
 Dependencies
 ------------
 
-* `setuptools <http://pypi.python.org/pypi/setuptools>`_ or
-  `distribute <http://pypi.python.org/pypi/distribute>`_
-
+* `setuptools <http://pypi.python.org/pypi/setuptools>`_
 * `zc.buildout <http://pypi.python.org/pypi/zc.buildout>`_
 
 

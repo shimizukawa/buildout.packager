@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 import os
 import sys
 import subprocess
@@ -53,7 +55,7 @@ if __name__ == '__main__':
         path = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0])))
 
     if not os.path.exists(path):
-        print >>sys.stderr, '"%s" is not directory' % path
+        print('"%s" is not directory' % path, file=sys.stderr)
         sys.exit(-2)
     main(path)
 

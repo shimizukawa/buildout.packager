@@ -23,12 +23,12 @@ def popen(cmd, verbose=0, **kwargs):
             **kwargs
         )
 
-    for line in iter(proc.stdout.readline, ''):
-        log.debug(line.rstrip())
+    for line in proc.stdout:
+        log.debug(line.decode().rstrip())
 
     # FIXME: currently, error output write after stdout
-    for line in iter(proc.stderr.readline, ''):
-        log.error(line.rstrip())
+    for line in proc.stderr:
+        log.error(line.decode().rstrip())
 
     proc.wait()
     if verbose:
@@ -44,6 +44,8 @@ def system(cmd):
             stderr = subprocess.PIPE
         )
     outdata, errdata = proc.communicate()
+    outdata = outdata.decode()
+    errdata = errdata.decode()
 
     for line in errdata.splitlines():
         log.error(line.rstrip())
@@ -75,17 +77,22 @@ def get_postfix_name(python):
     name = "py%d.%d" % get_python_version(python)[:2]
 
     proc = subprocess.Popen(
-            [python, '-c', 'from distutils.util import get_platform; print get_platform()'],
+            [python, '-c',
+             'from distutils.util import get_platform; print(get_platform())'
+            ],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
+    out = out.decode()
+
     return name + '-' + out.strip()
 
 
 def get_python_version(python):
     proc = subprocess.Popen(
-            [python, '-c', 'import sys; print tuple(sys.version_info)'],
+            [python, '-c', 'import sys; print(tuple(sys.version_info))'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
+    out = out.decode()
     #FIXME: check proc.returncode
     #FIXME: eval is safe?
     return eval(out)

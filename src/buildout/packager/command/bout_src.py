@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import os
 import sys
 import string
 import shutil
 import textwrap
 import hashlib
-import tempfile
 from distutils.core import Command
 from distutils import log
 
 import setuptools.archive_util
 
-from utils import popen, system, resolve_interpreter, get_postfix_name
-import py2exe_support
-import pyinstaller_support
+from .utils import popen, system, resolve_interpreter, get_postfix_name
+from . import py2exe_support
+from . import pyinstaller_support
 
 
 if py2exe_support.ENABLE:

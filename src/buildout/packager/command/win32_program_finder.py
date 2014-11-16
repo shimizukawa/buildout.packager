@@ -1,5 +1,9 @@
-import _winreg as reg
+from __future__ import print_function
 import os
+try:
+    import _winreg as reg
+except:
+    import winreg as reg
 
 BASE_KEY = r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 
@@ -43,7 +47,7 @@ def main(key_name, program_name):
 
 if __name__ == '__main__':
     path = main('NSIS', 'makensis.exe')
-    print path
+    print(path)
     w,r,e = os.popen3('"%s"' % path)
-    print r.read()
+    print(r.read())
 

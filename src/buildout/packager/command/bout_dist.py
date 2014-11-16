@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import os
 import sys
 import shutil
 from distutils.core import Command
-from utils import resolve_interpreter, get_postfix_name, to_filename
+
+from .utils import resolve_interpreter, get_postfix_name, to_filename
 
 # from unix_builder import builder
 
@@ -66,7 +69,7 @@ class bout_wininst(bout_dist):
             self.compiler = 'innosetup'
         else:
             compiler = self.compiler + '_builder'
-            __import__(compiler, globals(), locals())
+            __import__(compiler, globals(), locals(), level=1)
 
     def run (self):
         cmd_name = 'bout_src'
@@ -86,7 +89,7 @@ class bout_wininst(bout_dist):
 
         #### 環境別のmake_packageを呼び出す
         compiler = self.compiler + '_builder'
-        builder = __import__(compiler, globals(), locals())
+        builder = __import__(compiler, globals(), locals(), level=1)
         builder.builder(
                 application_name,  # Application Name
                 installer_name,    # Installer Name

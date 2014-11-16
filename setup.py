@@ -10,6 +10,12 @@ long_description = \
 
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.6",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
     "Environment :: Win32 (MS Windows)",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
