@@ -2,9 +2,9 @@
 import os
 import sys
 import subprocess
-from distutils.util import get_platform
 from distutils import log
-from utils import get_postfix_name, to_filename
+
+from utils import to_filename
 
 
 MAIN_SCRIPT = r"""
@@ -90,14 +90,14 @@ class InnoScript(object):
                  install_dir,
                  src_dir,
                  dist_dir,
-                 data_files = [],
-                 sys_files = [],
-                 exe_files = [],
-                 version = "0.0.1",
-                 author_name = None,
-                 author_url = None,
-                 postfix_name = None,
-                 verbose = 1):
+                 data_files=[],
+                 sys_files=[],
+                 exe_files=[],
+                 version="0.0.1",
+                 author_name=None,
+                 author_url=None,
+                 postfix_name=None,
+                 verbose=1):
         self.verbose = verbose
         installer_name = to_filename(installer_name, version, postfix_name)
         self.iss_path = os.path.join(src_dir, "%s.iss" % installer_name)
@@ -122,7 +122,7 @@ class InnoScript(object):
     def create(self):
         datastore = dict(('self_' + k, getattr(self, k)) for k in dir(self))
         datastore['distribution_full_path'] = os.path.join(
-                self.dist_dir, self.installer_name)
+            self.dist_dir, self.installer_name)
         datastore['app_publisher'] = ''
         datastore['app_publisher_url'] = ''
         datastore['app_support_url'] = ''
@@ -130,7 +130,8 @@ class InnoScript(object):
         if self.author_name:
             datastore['app_publisher'] = "AppPublisher=%s" % self.author_name
         if self.author_url:
-            datastore['app_publisher_url'] = "AppPublisherURL=%s" % self.author_url
+            datastore[
+                'app_publisher_url'] = "AppPublisherURL=%s" % self.author_url
             datastore['app_support_url'] = "AppSupportURL=%s" % self.author_url
 
         data_files = []
@@ -138,7 +139,7 @@ class InnoScript(object):
             dirname = os.path.dirname(path)
             data_files.append(
                 r'Source: "%s"; DestDir: "{app}\%s"; Flags: ignoreversion' % (
-                path, dirname))
+                    path, dirname))
         datastore['data_files'] = '\n'.join(data_files)
 
         sys_files = []
@@ -160,16 +161,17 @@ class InnoScript(object):
     def compile(self):
         try:
             import win32_program_finder
+
             compiler = win32_program_finder.main('Inno Setup', 'ISCC.exe')
         except:
             compiler = 'ISCC.exe'
 
         proc = subprocess.Popen(
-                [compiler, self.iss_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=sys.stderr
-            )
+            [compiler, self.iss_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr
+        )
 
         if self.verbose:  # displaying progress count-up
             total_count = len(self.data_files) + len(self.sys_files)
@@ -210,8 +212,8 @@ class InnoScript(object):
 ################################################################
 
 def builder(name, installer_name, install_dir, src_dir, dist_dir,
-           version='0.0.1', author_name=None, author_url=None,
-           postfix_name=None, verbose=1):
+            version='0.0.1', author_name=None, author_url=None,
+            postfix_name=None, verbose=1):
     data_files = []
     sys_files = []
     exe_files = []

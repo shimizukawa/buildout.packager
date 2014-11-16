@@ -10,17 +10,17 @@ import os
 import sys
 
 pyinstaller_path = os.path.join(
-                        os.path.dirname(__file__),
-                        'pyinstaller-1.5.zip'
-                    )
+    os.path.dirname(__file__),
+    'pyinstaller-1.5.zip'
+)
 if os.path.exists(pyinstaller_path):
     ENABLE = True
     sys.path.append(
-            os.path.join(
-                pyinstaller_path,
-                'pyinstaller-1.5'
-            )
+        os.path.join(
+            pyinstaller_path,
+            'pyinstaller-1.5'
         )
+    )
     import bindepend
     import pefile
 else:
@@ -30,9 +30,9 @@ else:
 def find_depends(build_dir):
     if not ENABLE:
         raise RuntimeError(
-                "You can't use PyInstaller.\nPlease read document in '%s'" %
-                os.path.abspath(__file__)
-            )
+            "You can't use PyInstaller.\nPlease read document in '%s'" %
+            os.path.abspath(__file__)
+        )
 
     # search from build directory
     ltoc = []

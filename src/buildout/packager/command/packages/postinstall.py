@@ -11,8 +11,8 @@ def main(app_dir):
     cwd = os.getcwd()
     pkg_dir = os.path.join(app_dir, 'packages')
     eggs_dir = os.path.join(app_dir, 'eggs')
-    env = dict([(k,os.environ[k]) for k in os.environ  # avoid PYTHONPATH
-                if not k.startswith('PYTHON')])        # for installation
+    env = dict([(k, os.environ[k]) for k in os.environ  # avoid PYTHONPATH
+                if not k.startswith('PYTHON')])  # for installation
 
     # ez_setup
     setuptools_src = sorted(
@@ -20,11 +20,11 @@ def main(app_dir):
         glob(os.path.join(eggs_dir, 'setuptools-*.zip'))
     )[0]
     ez_setup = [
-            sys.executable, '-c',
-            "import ez_setup; "
-            "ez_setup._install('%(setuptools_src)s'); "
-            % locals()
-            ]
+        sys.executable, '-c',
+        "import ez_setup; "
+        "ez_setup._install('%(setuptools_src)s'); "
+        % locals()
+    ]
     subprocess.check_call(ez_setup, cwd=pkg_dir, env=env)
 
     # bootstrap
@@ -34,17 +34,17 @@ def main(app_dir):
     )[-1]
     cfg = 'buildout.cfg'
     bootstrap_cmd = [
-            sys.executable, '-m', 'easy_install', buildouts_src,
-            ]
+        sys.executable, '-m', 'easy_install', buildouts_src,
+    ]
     subprocess.check_call(bootstrap_cmd, cwd=app_dir, env=env)
 
     # buildout
     buildout_cmd = [
-            sys.executable, '-c',
-            "from zc.buildout.buildout import main; "
-            "main(['-Uvc', '%(cfg)s']); "
-            % locals()
-            ]
+        sys.executable, '-c',
+        "from zc.buildout.buildout import main; "
+        "main(['-Uvc', '%(cfg)s']); "
+        % locals()
+    ]
     subprocess.check_call(buildout_cmd, cwd=app_dir, env=env)
 
 

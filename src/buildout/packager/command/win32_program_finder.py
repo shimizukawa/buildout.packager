@@ -1,11 +1,13 @@
 from __future__ import print_function
 import os
+
 try:
     import _winreg as reg
 except:
     import winreg as reg
 
 BASE_KEY = r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+
 
 def get_app_key(key_name):
     pk = reg.OpenKey(reg.HKEY_LOCAL_MACHINE, BASE_KEY)
@@ -48,6 +50,6 @@ def main(key_name, program_name):
 if __name__ == '__main__':
     path = main('NSIS', 'makensis.exe')
     print(path)
-    w,r,e = os.popen3('"%s"' % path)
+    w, r, e = os.popen3('"%s"' % path)
     print(r.read())
 

@@ -27,9 +27,9 @@ class bout_dist(Command):
          "include the Python interpreter. [default: False]"),
         ('python=', 'p',
          "include the specified Python interpreter. [default: %s]" % sys.executable),
-        ]
+    ]
 
-    def initialize_options (self):
+    def initialize_options(self):
         self.src_dir = None
         self.build_base = None
         self.dist_dir = None
@@ -37,7 +37,7 @@ class bout_dist(Command):
         self.python = None
         self.compiler = None
 
-    def finalize_options (self):
+    def finalize_options(self):
         if self.src_dir is None:
             self.src_dir = "src"
         if self.build_base is None:
@@ -56,14 +56,14 @@ class bout_wininst(bout_dist):
 
     user_options = bout_dist.user_options + [
         ('compiler=', 'c',
-            "compiler to compile installer. [default: innosetup]"),
-        ]
+         "compiler to compile installer. [default: innosetup]"),
+    ]
 
     def initialize_options(self):
         bout_dist.initialize_options(self)
         self.compiler = None
 
-    def finalize_options (self):
+    def finalize_options(self):
         bout_dist.finalize_options(self)
         if self.compiler is None:
             self.compiler = 'innosetup'
@@ -71,17 +71,20 @@ class bout_wininst(bout_dist):
             compiler = self.compiler + '_builder'
             __import__(compiler, globals(), locals(), level=1)
 
-    def run (self):
+    def run(self):
         cmd_name = 'bout_src'
         sub_cmd = self.reinitialize_command(cmd_name)
-        for option in ('src_dir', 'build_base', 'dist_dir', 'include_python', 'python'):
+        for option in (
+                'src_dir', 'build_base', 'dist_dir', 'include_python',
+                'python'):
             sub_cmd.initialized_options[option] = getattr(self, option)
-        self.run_command(cmd_name) #TODO: skip if prepared
+        self.run_command(cmd_name)  # TODO: skip if prepared
 
         postfix_name = get_postfix_name(self.python)
         build_dir = os.path.join(self.build_base, 'buildout-' + postfix_name)
         meta = self.distribution.metadata
-        options = dict(self.distribution.command_options.get('bout_config', {}))
+        options = dict(
+            self.distribution.command_options.get('bout_config', {}))
         application_name = options.get('application_name',
                                        ('default', meta.name))[1]
         installer_name = options.get('installer_name',
@@ -91,33 +94,35 @@ class bout_wininst(bout_dist):
         compiler = self.compiler + '_builder'
         builder = __import__(compiler, globals(), locals(), level=1)
         builder.builder(
-                application_name,  # Application Name
-                installer_name,    # Installer Name
-                application_name,  # Install Default Target Dir
-                build_dir,
-                self.dist_dir,
-                meta.version,
-                meta.author,
-                meta.url,
-                postfix_name,
-                self.verbose)
+            application_name,  # Application Name
+            installer_name,  # Installer Name
+            application_name,  # Install Default Target Dir
+            build_dir,
+            self.dist_dir,
+            meta.version,
+            meta.author,
+            meta.url,
+            postfix_name,
+            self.verbose)
 
 
 class bout_zip(bout_dist):
     description = "create a buildout zip installer."
 
-    def run (self):
+    def run(self):
         cwd = os.getcwd()
         cmd_name = 'bout_src'
         sub_cmd = self.reinitialize_command(cmd_name)
-        for option in ('src_dir', 'build_base', 'dist_dir', 'include_python', 'python'):
+        for option in (
+                'src_dir', 'build_base', 'dist_dir', 'include_python',
+                'python'):
             sub_cmd.initialized_options[option] = getattr(self, option)
-        self.run_command(cmd_name) #TODO: skip if prepared
+        self.run_command(cmd_name)  # TODO: skip if prepared
 
         postfix_name = get_postfix_name(self.python)
         meta = self.distribution.metadata
         build_dir = os.path.join(
-                cwd, self.build_base, 'buildout-' + postfix_name)
+            cwd, self.build_base, 'buildout-' + postfix_name)
         pkg_dir = os.path.join(build_dir, 'packages')
 
         remove_list = []
@@ -127,8 +132,8 @@ class bout_zip(bout_dist):
 
         zipfile_name = to_filename(meta.name, meta.version, postfix_name)
         filename = self.make_archive(
-                os.path.join(self.dist_dir, zipfile_name), 'zip',
-                root_dir=build_dir, base_dir=None)
+            os.path.join(self.dist_dir, zipfile_name), 'zip',
+            root_dir=build_dir, base_dir=None)
 
         for f in remove_list:
             os.remove(f)

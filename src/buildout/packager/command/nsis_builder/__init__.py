@@ -7,10 +7,11 @@ import subprocess
 import tempfile
 import shutil
 from distutils import log
+
 from buildout.packager.command.utils import to_filename
 
-NSIS_BULIDER_DIR = os.path.dirname(os.path.abspath(__file__))
 
+NSIS_BULIDER_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MAIN_SCRIPT = r"""\
 ; WARNING: This script has been created by buildout.packager.
@@ -176,21 +177,21 @@ class NSISScript(object):
                  install_dir,
                  src_dir,
                  dist_dir,
-                 data_files = [],
-                 sys_files = [],
-                 exe_files = [],
-                 version = "0.0.1",
-                 author_name = None,
-                 author_url = None,
-                 postfix_name = None,
-                 verbose = 1):
+                 data_files=[],
+                 sys_files=[],
+                 exe_files=[],
+                 version="0.0.1",
+                 author_name=None,
+                 author_url=None,
+                 postfix_name=None,
+                 verbose=1):
         self.verbose = verbose
         installer_name = to_filename(installer_name, version, postfix_name)
         installer_name += '.exe'
 
         self.temp_path = tempfile.mkdtemp('.nsis', 'buildout.packager-')
         self.script_path = os.path.join(
-                self.temp_path, "%s.nsi" % installer_name)
+            self.temp_path, "%s.nsi" % installer_name)
         self.src_dir = src_dir
         if not self.src_dir[-1] in "\\/":
             self.src_dir += os.sep
@@ -213,11 +214,12 @@ class NSISScript(object):
         datastore = dict(('self_' + k, getattr(self, k)) for k in dir(self))
         datastore['nsis_builder_dir'] = NSIS_BULIDER_DIR
         datastore['distribution_full_path'] = os.path.join(
-                self.dist_dir, self.installer_name)
+            self.dist_dir, self.installer_name)
 
         data_files = []
         for path in self.data_files:
-            dirname = os.path.join('$INSTDIR', os.path.dirname(path)).rstrip(os.sep)
+            dirname = os.path.join('$INSTDIR', os.path.dirname(path)).rstrip(
+                os.sep)
             filename = os.path.join(os.path.abspath(self.src_dir), path)
             data_files.append(r'SetOutPath %s' % dirname)
             data_files.append(r'File "%s"' % filename)
@@ -234,18 +236,19 @@ class NSISScript(object):
 
     def compile(self):
         from buildout.packager.command import win32_program_finder
+
         compiler = win32_program_finder.main('NSIS', 'makensis.exe')
         if compiler is None:
             compiler = 'makensis.exe'
 
         proc = subprocess.Popen(
-                [compiler, self.script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=sys.stderr
-            )
+            [compiler, self.script_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr
+        )
 
-        if 0: #self.verbose:  # displaying progress count-up
+        if 0:  # self.verbose:  # displaying progress count-up
             total_count = len(self.data_files) + len(self.sys_files)
             count = -1
             last_lines = []
@@ -286,8 +289,8 @@ class NSISScript(object):
 ################################################################
 
 def builder(name, installer_name, install_dir, src_dir, dist_dir,
-           version='0.0.1', author_name=None, author_url=None,
-           postfix_name=None, verbose=1):
+            version='0.0.1', author_name=None, author_url=None,
+            postfix_name=None, verbose=1):
     data_files = []
     sys_files = []
     exe_files = []
@@ -314,4 +317,3 @@ def builder(name, installer_name, install_dir, src_dir, dist_dir,
     log.info("Compiling the NSIS script.")
     if script.compile():
         script.cleanup()
-

@@ -8,7 +8,7 @@ __all__ = [
     'popen', 'system',
     'resolve_interpreter', 'get_postfix_name', 'get_python_version',
     'norm', 'to_filename',
-    ]
+]
 
 
 def popen(cmd, verbose=0, **kwargs):
@@ -16,12 +16,12 @@ def popen(cmd, verbose=0, **kwargs):
         log.info('execute: %r' % cmd)
 
     proc = subprocess.Popen(
-            cmd,
-            stdin  = subprocess.PIPE,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE,
-            **kwargs
-        )
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        **kwargs
+    )
 
     for line in proc.stdout:
         log.debug(line.decode().rstrip())
@@ -39,10 +39,10 @@ def popen(cmd, verbose=0, **kwargs):
 
 def system(cmd):
     proc = subprocess.Popen(
-            cmd,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE
-        )
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
     outdata, errdata = proc.communicate()
     outdata = outdata.decode()
     errdata = errdata.decode()
@@ -77,10 +77,11 @@ def get_postfix_name(python):
     name = "py%d.%d" % get_python_version(python)[:2]
 
     proc = subprocess.Popen(
-            [python, '-c',
-             'from distutils.util import get_platform; print(get_platform())'
-            ],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        [
+            python, '-c',
+            'from distutils.util import get_platform; print(get_platform())'
+        ],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
     out = out.decode()
 
@@ -89,17 +90,17 @@ def get_postfix_name(python):
 
 def get_python_version(python):
     proc = subprocess.Popen(
-            [python, '-c', 'import sys; print(tuple(sys.version_info))'],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        [python, '-c', 'import sys; print(tuple(sys.version_info))'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
     out = out.decode()
-    #FIXME: check proc.returncode
-    #FIXME: eval is safe?
+    # FIXME: check proc.returncode
+    # FIXME: eval is safe?
     return eval(out)
 
 
 def norm(name):
-    return name.replace('-','_')
+    return name.replace('-', '_')
 
 
 def to_filename(project_name, project_version, postfix_name=None):

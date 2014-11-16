@@ -7,6 +7,7 @@ if sys.version_info < (3, 0):
 
     try:
         from py2exe import build_exe, py2exe_util
+
         ENABLE = True
     except:
         ENABLE = False
@@ -28,14 +29,15 @@ if sys.version_info < (3, 0):
                 path = os.path.join(dirpath, fn)
                 try:
                     fileset = build_exe.bin_depends(
-                            paths, [path], build_exe.EXCLUDED_DLLS)
+                        paths, [path], build_exe.EXCLUDED_DLLS)
                     for fs in fileset:
                         results.extend(f for f in fs if f not in results)
                 except:
                     pass
 
         for f in results:
-            for fs in build_exe.bin_depends(paths, [f], build_exe.EXCLUDED_DLLS):
+            for fs in build_exe.bin_depends(paths, [f],
+                                            build_exe.EXCLUDED_DLLS):
                 results.extend(f for f in fs if f not in results)
 
         return ((os.path.split(x)[1], x) for x in results)
@@ -44,6 +46,7 @@ else:
 
     try:
         from py2exe import dllfinder
+
         ENABLE = True
     except:
         ENABLE = False
@@ -65,6 +68,5 @@ else:
                 scanner = dllfinder.Scanner()
                 scanner.add_dll(path)
                 results.update(scanner.real_dlls())
-
 
         return ((os.path.split(x)[1], x) for x in results)
