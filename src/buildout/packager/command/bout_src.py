@@ -234,9 +234,8 @@ class bout_src(Command):
         if errcode:
             raise RuntimeError('command return error code:', errcode, cmd)
 
-        # zc.buildout = 2.2.1
-        # because 2.2.5 require newer setuptools and conflict with 0.9.8
-        zc_buildout = 'zc.buildout==2.2.1'
+        # zc.buildout 2.2.5 require setuptools==7.0
+        zc_buildout = 'zc.buildout==2.2.5'
 
         # download zc.buildout
         log.info("download zc.buildout.")

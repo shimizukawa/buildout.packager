@@ -13,7 +13,10 @@ def main(app_dir):
                 if not k.startswith('PYTHON')])        # for installation
 
     # ez_setup
-    setuptools_src = sorted(glob(os.path.join(eggs_dir, 'setuptools-*gz')))[0]
+    setuptools_src = sorted(
+        glob(os.path.join(eggs_dir, 'setuptools-*gz')) +
+        glob(os.path.join(eggs_dir, 'setuptools-*.zip'))
+    )[0]
     ez_setup = [
             sys.executable, '-c',
             "import ez_setup; "
@@ -23,7 +26,10 @@ def main(app_dir):
     subprocess.check_call(ez_setup, cwd=pkg_dir, env=env)
 
     # bootstrap
-    buildouts_src = sorted(glob(os.path.join(eggs_dir, 'zc.buildout-*gz')))[-1]
+    buildouts_src = sorted(
+        glob(os.path.join(eggs_dir, 'zc.buildout-*gz')) +
+        glob(os.path.join(eggs_dir, 'zc.buildout-*.zip'))
+    )[-1]
     cfg = 'buildout.cfg'
     bootstrap_cmd = [
             sys.executable, '-m', 'easy_install', buildouts_src,
